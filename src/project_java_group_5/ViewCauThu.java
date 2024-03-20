@@ -48,17 +48,17 @@ public class ViewCauThu {
             return false;
         }
 
-        try {           
+        try {
             int x = Integer.parseInt(str);
             if (x > 0)
                 return true;
-            else 
+            else
                 return false;
         } catch (NumberFormatException e) {
             return false;
         }
     }
-    
+
     public static boolean containsNumber(String str) {
         if (str == null || str.isEmpty()) {
             return false;
@@ -75,7 +75,7 @@ public class ViewCauThu {
 
         return containsSpecialCharacter; // Trả về true nếu có ký tự đặc biệt, nghĩa là chuỗi không hợp lệ
     }
-    
+
     public static String normalizeName(String name) {
         if (name == null || name.isEmpty()) {
             return name;
@@ -90,6 +90,33 @@ public class ViewCauThu {
         }
 
         return normalized.toString().trim(); // Loại bỏ dấu cách thừa ở cuối chuỗi trước khi trả về
+    }
+    
+    public static boolean isStringInFormat(String input) {
+        // Kiểm tra định dạng cơ bản của chuỗi sử dụng biểu thức chính quy
+        if (!input.matches("(\\d)-(\\d)-(\\d)-(\\d)-(\\d)")) {
+            return false;
+        }
+
+        // Tách chuỗi thành mảng các phần tử dựa trên dấu "-"
+        String[] parts = input.split("-");
+
+        // Kiểm tra từng phần tử để đảm bảo chúng là số nguyên từ 1 đến 10
+        for (String part : parts) {
+            try {
+                int number = Integer.parseInt(part);
+                if (number < 1 || number > 10) {
+                    // Nếu số nằm ngoài khoảng 1 đến 10, trả về false
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                // Nếu không thể chuyển đổi thành số, trả về false
+                return false;
+            }
+        }
+
+        // Nếu tất cả kiểm tra đều hợp lệ, trả về true
+        return true;
     }
 
     public static void view() {
@@ -174,7 +201,7 @@ public class ViewCauThu {
 
             String[] years = new String[61];
             for (int i = 0; i < 61; i++) {
-                years[i] = String.valueOf(2024 - i - 4); // Fill the array with day numbers as strings
+                years[i] = String.valueOf(2024 - i); // Fill the array with day numbers as strings
             }
             JComboBox<String> yearComboBox = new JComboBox<>(years);
 
@@ -213,18 +240,18 @@ public class ViewCauThu {
                 try {
                     // Convert relevant fields to appropriate types
                     String name1 = nameField.getText();
-                    String nationality1 = nationalityField.getText();                                   
-                    
-                    if(containsNumber(name1) || containsNumber(nationality1)){
-                        JOptionPane.showMessageDialog(null, "Vui lòng nhập các dữ liệu tên, quốc tịch không chứa kí tự đặc biệt hoặc số", "Error",
+                    String nationality1 = nationalityField.getText();
+
+                    if (containsNumber(name1) || containsNumber(nationality1)) {
+                        JOptionPane.showMessageDialog(null,
+                                "Vui lòng nhập các dữ liệu tên, quốc tịch không chứa kí tự đặc biệt hoặc số", "Error",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
-                    }    
+                    }
                     String name = normalizeName(name1);
                     String nationality = normalizeName(nationality1);
-                    
-                    String joinD = (String)
-                            joinDayComboBox.getSelectedItem() + "/"
+
+                    String joinD = (String) joinDayComboBox.getSelectedItem() + "/"
                             + (String) joinMonthComboBox.getSelectedItem() + "/"
                             + (String) joinYearComboBox.getSelectedItem();
 
@@ -242,35 +269,48 @@ public class ViewCauThu {
                             + (String) monthComboBox.getSelectedItem() + "/"
                             + (String) yearComboBox.getSelectedItem();
 
-                    //Xu li ngoai le ngay thang nam
+                    // Xu li ngoai le ngay thang nam
                     if (!validator.isValid(joinD) || !validator.isValid(birth)) {
                         JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    //Xu li ngoai le chuoi nhap vao khong phai so
-                    if(name.isEmpty() || nationality.isEmpty() || sotran.isEmpty() || soBanThang.isEmpty() || Luong.isEmpty()){
+                    // Xu li ngoai le chuoi nhap vao khong phai so
+                    if (name.isEmpty() || nationality.isEmpty() || sotran.isEmpty() || soBanThang.isEmpty()
+                            || Luong.isEmpty()) {
                         JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ dữ liệu", "Error",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
                     }
-                    if(!isRealNumber(sotran) || !isRealNumber(soBanThang) || !isRealNumber(Luong)){
-                        JOptionPane.showMessageDialog(null, "Vui lòng nhập các dữ liệu số trận, số bàn thắng và lương là các số thực hợp lệ", "Error",
+                    if (!isRealNumber(sotran) || !isRealNumber(soBanThang) || !isRealNumber(Luong)) {
+                        JOptionPane.showMessageDialog(null,
+                                "Vui lòng nhập các dữ liệu số trận, số bàn thắng và lương là các số thực hợp lệ",
+                                "Error",
                                 JOptionPane.ERROR_MESSAGE);
                         return;
-                    }                                           
-                    
+                    }
+
                     String lastFiveMatchesScores = lastFiveMatchesField.getText();
+                    if(!isStringInFormat(lastFiveMatchesScores)){
+                        JOptionPane.showMessageDialog(null,
+                                "Vui lòng nhập định dạng điểm số 5 trận gần nhất hợp lệ",
+                                "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
 
                     // Add the new row to the model
-                    model.addRow(new Object[]{name, nationality, gender, birth, joinD, selectedPosition, sotran,
-                        soBanThang, Luong, lastFiveMatchesScores});
+                    model.addRow(new Object[] { name, nationality, gender, birth, joinD, selectedPosition, sotran,
+                            soBanThang, Luong, lastFiveMatchesScores });
                     saveTableModelToFile(model, "Data.csv");
 
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Số trận, số bàn thắng và lương phải là số nguyên. Vui lòng nhập lại.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Số trận, số bàn thắng và lương phải là số nguyên. Vui lòng nhập lại.", "Lỗi nhập liệu",
+                            JOptionPane.ERROR_MESSAGE);
                 } catch (IllegalArgumentException ex) {
-                    JOptionPane.showMessageDialog(null, "Dữ liệu nhập sai. Vui lòng không để trống các trường yêu cầu.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Dữ liệu nhập sai. Vui lòng không để trống các trường yêu cầu.",
+                            "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -355,11 +395,28 @@ public class ViewCauThu {
                             int fieldIndex = 1; // Index for accessing the JTextField values in fieldsArray
                             // Cập nhật dữ liệu mới vào model dựa trên nhập liệu
                             if (nameCheck.isSelected()) {
-                                model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 0);
+                                JTextField name = (JTextField) fieldsArray[fieldIndex];
+                                String namee = (String) name.getText();
+                                if (containsNumber(namee)) {
+                                    JOptionPane.showMessageDialog(null,
+                                            "Vui lòng nhập các dữ liệu tên không chứa kí tự đặc biệt hoặc số", "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
+                                String name2 = normalizeName(namee);
+                                model.setValueAt(name2, selectedRow, 0);
                                 fieldIndex += 2;
                             }
                             // Cập nhật các trường khác dựa vào lựa chọn
                             if (nationalityCheck.isSelected()) {
+                                JTextField quoctich = (JTextField) fieldsArray[fieldIndex];
+                                String quocc = (String)quoctich.getText();
+                                if (containsNumber(quocc)) {
+                                    JOptionPane.showMessageDialog(null,
+                                            "Vui lòng nhập các dữ liệu quốc tịch không chứa kí tự đặc biệt hoặc số", "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 1);
                                 fieldIndex += 2;
                             }
@@ -369,31 +426,82 @@ public class ViewCauThu {
                                 fieldIndex += 2;
                             }
                             if (birthDateCheck.isSelected()) {
+                                JTextField Date = (JTextField) fieldsArray[fieldIndex];
+                                String birthDate = (String) Date.getText();
+                                if (!validator.isValid(birthDate)) {
+                                    JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 3);
                                 fieldIndex += 2;
                             }
                             if (joinDateCheck.isSelected()) {
+                                JTextField Date = (JTextField) fieldsArray[fieldIndex];
+                                String joinDate = (String) Date.getText();
+                                if (!validator.isValid(joinDate)) {
+                                    JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 4);
                                 fieldIndex += 2;
                             }
                             if (positionCheck.isSelected()) {
+                                
                                 model.setValueAt(((JComboBox) fieldsArray[fieldIndex]).getSelectedItem(), selectedRow,
                                         5);
                                 fieldIndex += 2;
                             }
                             if (matchCheck.isSelected()) {
+                                JTextField check = (JTextField) fieldsArray[fieldIndex];
+                                String sotrann = check.getText();
+                                if (!isRealNumber(sotrann)) {
+                                    JOptionPane.showMessageDialog(null,
+                                            "Vui lòng nhập các dữ liệu số trận là số thực hợp lệ",
+                                            "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 6);
                                 fieldIndex += 2;
                             }
                             if (goalCheck.isSelected()) {
+                                JTextField check = (JTextField) fieldsArray[fieldIndex];
+                                String banthang = check.getText();
+                                if (!isRealNumber(banthang)) {
+                                    JOptionPane.showMessageDialog(null,
+                                            "Vui lòng nhập các dữ liệu số bàn thắng là số thực hợp lệ",
+                                            "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 7);
                                 fieldIndex += 2;
                             }
                             if (salaryCheck.isSelected()) {
+                                JTextField check = (JTextField) fieldsArray[fieldIndex];
+                                String luongg = check.getText();
+                                if (!isRealNumber(luongg)) {
+                                    JOptionPane.showMessageDialog(null,
+                                            "Vui lòng nhập các dữ liệu lương là số thực hợp lệ",
+                                            "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 8);
                                 fieldIndex += 2;
                             }
                             if (lastFiveMatchesCheck.isSelected()) {
+                                JTextField check = (JTextField) fieldsArray[fieldIndex];
+                                String namtran = check.getText();
+                                if (!isStringInFormat(namtran)) {
+                                    JOptionPane.showMessageDialog(null,
+                                            "Vui lòng nhập định dạng điểm số 5 trận gần nhất hợp lệ",
+                                            "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 9);
                                 // Không cần tăng fieldIndex ở đây nếu đây là trường cuối cùng
                             }

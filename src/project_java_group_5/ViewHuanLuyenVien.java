@@ -53,7 +53,6 @@ public class ViewHuanLuyenVien extends JFrame {
         btnDelete = new JButton("Delete");
         btnSave = new JButton("Save");
         btnLoad = new JButton("Load");
-        
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnAdd);
@@ -116,11 +115,16 @@ public class ViewHuanLuyenVien extends JFrame {
         String birthDate = txtBirthDate.getText().trim();
         String qualifications = txtQualifications.getText().trim();
         String experience = txtExperience.getText().trim();
-
+        DateValidator validator = new DateValidator("dd/MM/uuuu");
         // Validate the input data
         if (name.isEmpty() || nationality.isEmpty() || birthDate.isEmpty() || qualifications.isEmpty()
                 || experience.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!validator.isValid(birthDate)) {
+            JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -136,41 +140,40 @@ public class ViewHuanLuyenVien extends JFrame {
     }
 
     private void updateCoach() {
-    int selectedRow = table.getSelectedRow();
-    if (selectedRow >= 0) {
-        // Only update fields if the corresponding text field is not empty.
-        String name = txtName.getText().trim();
-        if (!name.isEmpty()) {
-            model.setValueAt(name, selectedRow, 0);
-        }
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            // Only update fields if the corresponding text field is not empty.
+            String name = txtName.getText().trim();
+            if (!name.isEmpty()) {
+                model.setValueAt(name, selectedRow, 0);
+            }
 
-        String nationality = txtNationality.getText().trim();
-        if (!nationality.isEmpty()) {
-            model.setValueAt(nationality, selectedRow, 1);
-        }
+            String nationality = txtNationality.getText().trim();
+            if (!nationality.isEmpty()) {
+                model.setValueAt(nationality, selectedRow, 1);
+            }
 
-        String birthDate = txtBirthDate.getText().trim();
-        if (!birthDate.isEmpty()) {
-            model.setValueAt(birthDate, selectedRow, 2);
-        }
+            String birthDate = txtBirthDate.getText().trim();
+            if (!birthDate.isEmpty()) {
+                model.setValueAt(birthDate, selectedRow, 2);
+            }
 
-        String qualifications = txtQualifications.getText().trim();
-        if (!qualifications.isEmpty()) {
-            model.setValueAt(qualifications, selectedRow, 3);
-        }
+            String qualifications = txtQualifications.getText().trim();
+            if (!qualifications.isEmpty()) {
+                model.setValueAt(qualifications, selectedRow, 3);
+            }
 
-        String experience = txtExperience.getText().trim();
-        if (!experience.isEmpty()) {
-            model.setValueAt(experience, selectedRow, 4);
-        }
+            String experience = txtExperience.getText().trim();
+            if (!experience.isEmpty()) {
+                model.setValueAt(experience, selectedRow, 4);
+            }
 
-        JOptionPane.showMessageDialog(this, "Coach information updated successfully.", "Information",
-                JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        JOptionPane.showMessageDialog(this, "Please select a coach to update.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Coach information updated successfully.", "Information",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a coach to update.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-}
-
 
     private void deleteCoach() {
         int selectedRow = table.getSelectedRow();
@@ -220,15 +223,14 @@ public class ViewHuanLuyenVien extends JFrame {
             JOptionPane.showMessageDialog(this, "Error loading data!", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
-    }   
-    
-    
+    }
+
     public static void view() {
         EventQueue.invokeLater(() -> {
             try {
                 ViewHuanLuyenVien frame = new ViewHuanLuyenVien();
                 frame.setVisible(true);
-                                
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
