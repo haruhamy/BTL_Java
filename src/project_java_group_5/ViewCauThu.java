@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -42,7 +43,14 @@ public class ViewCauThu {
             JOptionPane.showMessageDialog(null, "Error writing data to file: " + e.getMessage());
         }
     }
-
+    
+    public static String chuanhoa(String s) {
+        String[] arr = s.split("/");
+        String ans = String.format("%02d", Integer.parseInt(arr[0])) + "/";
+        ans += String.format("%02d", Integer.parseInt(arr[1])) + "/" + arr[2];
+        return ans;
+    }
+    
     public static boolean isRealNumber(String str) {
         if (str == null || str.isEmpty()) {
             return false;
@@ -351,7 +359,7 @@ public class ViewCauThu {
                                 new JTextField((String) table.getModel().getValueAt(selectedRow, 1))));
                     }
                     if (genderCheck.isSelected()) {
-                        JComboBox<String> genderComboBox = new JComboBox<>(new String[] { "Male", "Female", "Other" });
+                        JComboBox<String> genderComboBox = new JComboBox<>(new String[] { "Nam", "Nữ", "Khác" });
                         genderComboBox.setSelectedItem(table.getModel().getValueAt(selectedRow, 2));
                         fields.addAll(Arrays.asList("Giới tính:", genderComboBox));
                     }
@@ -427,24 +435,24 @@ public class ViewCauThu {
                             }
                             if (birthDateCheck.isSelected()) {
                                 JTextField Date = (JTextField) fieldsArray[fieldIndex];
-                                String birthDate = (String) Date.getText();
+                                String birthDate = chuanhoa((String) Date.getText());
                                 if (!validator.isValid(birthDate)) {
                                     JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
                                             JOptionPane.ERROR_MESSAGE);
                                     return;
                                 }
-                                model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 3);
+                                model.setValueAt(birthDate, selectedRow, 3);
                                 fieldIndex += 2;
                             }
                             if (joinDateCheck.isSelected()) {
                                 JTextField Date = (JTextField) fieldsArray[fieldIndex];
-                                String joinDate = (String) Date.getText();
+                                String joinDate = chuanhoa((String) Date.getText());
                                 if (!validator.isValid(joinDate)) {
                                     JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
                                             JOptionPane.ERROR_MESSAGE);
                                     return;
                                 }
-                                model.setValueAt(((JTextField) fieldsArray[fieldIndex]).getText(), selectedRow, 4);
+                                model.setValueAt(joinDate, selectedRow, 4);
                                 fieldIndex += 2;
                             }
                             if (positionCheck.isSelected()) {
@@ -553,7 +561,18 @@ public class ViewCauThu {
         addLatestMatchScoreButton.addActionListener(e -> {
             int selectedRow = table.getSelectedRow();
             if (selectedRow != -1) {
-                String latestMatchScore = JOptionPane.showInputDialog("Enter the latest match score:");
+                String latestMatchScore = JOptionPane.showInputDialog("Nhập vào điểm số cầu thủ trận mới nhất:");
+                List<String> arr = new ArrayList<>();
+                for (int i = 1; i <= 10; i++) {
+                    arr.add(""+i);
+                }
+                if (!arr.contains(latestMatchScore)) {
+                    JOptionPane.showMessageDialog(null,
+                                            "Vui lòng nhập định dạng điểm số trận gần nhất hợp lệ",
+                                            "Error",
+                                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
                 // Get the current row's latest match scores
                 String currentLastFiveMatchesScores = (String) model.getValueAt(selectedRow, 9);

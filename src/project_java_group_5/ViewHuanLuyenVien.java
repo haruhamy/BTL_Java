@@ -10,10 +10,68 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViewHuanLuyenVien extends JFrame {
+
     private JTable table;
     private DefaultTableModel model;
     private JTextField txtName, txtNationality, txtBirthDate, txtQualifications, txtExperience;
     private JButton btnAdd, btnUpdate, btnDelete, btnSave, btnLoad;
+
+    public static boolean isRealNumber(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        try {
+            int x = Integer.parseInt(str);
+            if (x > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean containsNumber(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            if (Character.isDigit(str.charAt(i))) {
+                return true; // Tìm thấy số, trả về true
+            }
+        }
+        // Kiểm tra ký tự đặc biệt, cho phép dấu cách
+        String specialCharactersPattern = "[^a-zA-Z0-9\\s]";
+        boolean containsSpecialCharacter = str.matches(".*" + specialCharactersPattern + ".*");
+
+        return containsSpecialCharacter; // Trả về true nếu có ký tự đặc biệt, nghĩa là chuỗi không hợp lệ
+    }
+
+    public static String normalizeName(String name) {
+        if (name == null || name.isEmpty()) {
+            return name;
+        }
+
+        String[] words = name.trim().split("\\s+"); // Tách chuỗi dựa trên một hoặc nhiều dấu cách
+        StringBuilder normalized = new StringBuilder();
+
+        for (String word : words) {
+            String normalizedWord = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+            normalized.append(normalizedWord).append(" ");
+        }
+
+        return normalized.toString().trim(); // Loại bỏ dấu cách thừa ở cuối chuỗi trước khi trả về
+    }
+
+    public static String chuanhoa(String s) {
+        String[] arr = s.split("/");
+        String ans = String.format("%02d", Integer.parseInt(arr[0])) + "/";
+        ans += String.format("%02d", Integer.parseInt(arr[1])) + "/" + arr[2];
+        return ans;
+    }
 
     public ViewHuanLuyenVien() {
         setTitle("Quản lý Huấn luyện viên");
@@ -23,7 +81,7 @@ public class ViewHuanLuyenVien extends JFrame {
         setLayout(new BorderLayout());
 
         // Table setup
-        String[] columnNames = { "Name", "Nationality", "BirthDate", "Qualifications", "Experience" };
+        String[] columnNames = {"Tên", "Quốc tịch", "Ngày sinh", "Chứng chỉ", "Số năm kinh nghiệm"};
         model = new DefaultTableModel(null, columnNames);
         table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -31,19 +89,19 @@ public class ViewHuanLuyenVien extends JFrame {
 
         // Form setup
         JPanel panel = new JPanel(new GridLayout(0, 2));
-        panel.add(new JLabel("Name:"));
+        panel.add(new JLabel("Tên:"));
         txtName = new JTextField();
         panel.add(txtName);
-        panel.add(new JLabel("Nationality:"));
+        panel.add(new JLabel("Quốc tịch:"));
         txtNationality = new JTextField();
         panel.add(txtNationality);
-        panel.add(new JLabel("Birth Date:"));
+        panel.add(new JLabel("Ngày sinh:"));
         txtBirthDate = new JTextField();
         panel.add(txtBirthDate);
-        panel.add(new JLabel("Qualifications:"));
+        panel.add(new JLabel("Chúng chỉ:"));
         txtQualifications = new JTextField();
         panel.add(txtQualifications);
-        panel.add(new JLabel("Experience:"));
+        panel.add(new JLabel("Số năm kinh nghiệm:"));
         txtExperience = new JTextField();
         panel.add(txtExperience);
 
@@ -122,14 +180,25 @@ public class ViewHuanLuyenVien extends JFrame {
             JOptionPane.showMessageDialog(this, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (!validator.isValid(birthDate)) {
+        if (containsNumber(name) || containsNumber(nationality)) {
+            JOptionPane.showMessageDialog(null, "Vui lòng nhập tên hoặc quốc tịch hợp lệ", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!validator.isValid(chuanhoa(birthDate))) {
             JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!isRealNumber(experience)) {
+            JOptionPane.showMessageDialog(null, "Số năm kinh nghiệm chưa hợp lệ", "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         // Add data to the table model
-        model.addRow(new Object[] { name, nationality, birthDate, qualifications, experience });
+        model.addRow(new Object[]{normalizeName(name), normalizeName(nationality), chuanhoa(birthDate), qualifications, experience});
 
         // Clear the input fields after adding
         txtName.setText("");
@@ -140,31 +209,61 @@ public class ViewHuanLuyenVien extends JFrame {
     }
 
     private void updateCoach() {
+        DateValidator validator = new DateValidator("dd/MM/uuuu");
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
             // Only update fields if the corresponding text field is not empty.
+            
             String name = txtName.getText().trim();
-            if (!name.isEmpty()) {
-                model.setValueAt(name, selectedRow, 0);
-            }
-
             String nationality = txtNationality.getText().trim();
-            if (!nationality.isEmpty()) {
-                model.setValueAt(nationality, selectedRow, 1);
-            }
-
             String birthDate = txtBirthDate.getText().trim();
-            if (!birthDate.isEmpty()) {
-                model.setValueAt(birthDate, selectedRow, 2);
-            }
-
             String qualifications = txtQualifications.getText().trim();
+            String experience = txtExperience.getText().trim();
+            
+            if(name.isEmpty() && nationality.isEmpty() && birthDate.isEmpty() && qualifications.isEmpty() && experience.isEmpty()){
+                JOptionPane.showMessageDialog(null, "Vui lòng nhập ít nhất 1 dữ liệu", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+            }
+            
+            if (!name.isEmpty()) {
+                if (containsNumber(name)) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng nhập tên hợp lệ", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                model.setValueAt(normalizeName(name), selectedRow, 0);
+            }           
+
+            if (!nationality.isEmpty()) {
+                if (containsNumber(nationality)) {
+                    JOptionPane.showMessageDialog(null, "Vui lòng nhập quốc tịch hợp lệ", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                model.setValueAt(normalizeName(nationality), selectedRow, 1);
+            }           
+
+            if (!birthDate.isEmpty()) {
+                
+                if (!validator.isValid(chuanhoa(birthDate))) {
+                    JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                model.setValueAt(chuanhoa(birthDate), selectedRow, 2);
+            }
+            
             if (!qualifications.isEmpty()) {
                 model.setValueAt(qualifications, selectedRow, 3);
-            }
+            }           
 
-            String experience = txtExperience.getText().trim();
             if (!experience.isEmpty()) {
+                if (!isRealNumber(experience)) {
+                    JOptionPane.showMessageDialog(null, "Số năm kinh nghiệm chưa hợp lệ", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 model.setValueAt(experience, selectedRow, 4);
             }
 
