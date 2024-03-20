@@ -161,9 +161,13 @@ public class ViewCauThu {
                     String nationality = nationalityField.getText();
 
                     String joinD = (String) joinDayComboBox.getSelectedItem() + "/" + (String) joinMonthComboBox.getSelectedItem() + "/" + (String) joinYearComboBox.getSelectedItem();
-                    Integer sotran = Integer.parseInt(matchField.getText());
-                    Integer soBanThang = Integer.parseInt(goalField.getText());
-                    Integer Luong = Integer.parseInt(salaryField.getText());
+//                    Integer sotran = Integer.parseInt(matchField.getText());
+//                    Integer soBanThang = Integer.parseInt(goalField.getText());
+//                    Integer Luong = Integer.parseInt(salaryField.getText());
+                    String sotran = matchField.getText();
+                    String soBanThang = goalField.getText();
+                    String Luong = salaryField.getText();
+                    
 
                     // Get the selected position from JComboBox
                     String gender = (String) genderField.getSelectedItem();
