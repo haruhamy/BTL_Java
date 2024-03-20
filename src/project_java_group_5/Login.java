@@ -30,8 +30,8 @@ public class Login {
         login.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (username.getText().equals("haru") &&
-                        String.valueOf(password.getPassword()).equals("hamy")) {
+                if (username.getText().equals("team5") &&
+                        String.valueOf(password.getPassword()).equals("123")) {
                     new Menu().setVisible(true);
                     frame.dispose();
                     // ViewCauThu.view();
