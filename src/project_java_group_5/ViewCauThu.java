@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class ViewCauThu {
 
-    private static void saveTableModelToFile(DefaultTableModel model, String filePath) {
+    public static void saveTableModelToFile(DefaultTableModel model, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (int row = 0; row < model.getRowCount(); row++) {
                 for (int col = 0; col < model.getColumnCount(); col++) {
@@ -43,8 +43,58 @@ public class ViewCauThu {
         }
     }
 
+    public static boolean isRealNumber(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        try {           
+            int x = Integer.parseInt(str);
+            if (x > 0)
+                return true;
+            else 
+                return false;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
+    public static boolean containsNumber(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            if (Character.isDigit(str.charAt(i))) {
+                return true; // Tìm thấy số, trả về true
+            }
+        }
+        // Kiểm tra ký tự đặc biệt, cho phép dấu cách
+        String specialCharactersPattern = "[^a-zA-Z0-9\\s]";
+        boolean containsSpecialCharacter = str.matches(".*" + specialCharactersPattern + ".*");
+
+        return containsSpecialCharacter; // Trả về true nếu có ký tự đặc biệt, nghĩa là chuỗi không hợp lệ
+    }
+    
+    public static String normalizeName(String name) {
+        if (name == null || name.isEmpty()) {
+            return name;
+        }
+
+        String[] words = name.trim().split("\\s+"); // Tách chuỗi dựa trên một hoặc nhiều dấu cách
+        StringBuilder normalized = new StringBuilder();
+
+        for (String word : words) {
+            String normalizedWord = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+            normalized.append(normalizedWord).append(" ");
+        }
+
+        return normalized.toString().trim(); // Loại bỏ dấu cách thừa ở cuối chuỗi trước khi trả về
+    }
+
     public static void view() {
         Object[][] data = null; // Initialize data outside the try block
+        DateValidator validator = new DateValidator("dd/MM/uuuu");
 
         try {
             BufferedReader br = new BufferedReader(new FileReader("Data.csv"));
@@ -81,8 +131,8 @@ public class ViewCauThu {
 
         JFrame frame = new JFrame("Cau thu");
 
-        String[] col = {"Ten", "Quoc tich", "Gioi tinh", "Ngay Sinh", "Ngay tham gia", "Vi tri thi dau", "So tran",
-            "So ban thang", "Luong thoa thuan", "Diem so 5 tran gan nhat"};
+        String[] col = { "Ten", "Quoc tich", "Gioi tinh", "Ngay Sinh", "Ngay tham gia", "Vi tri thi dau", "So tran",
+                "So ban thang", "Luong thoa thuan", "Diem so 5 tran gan nhat" };
 
         DefaultTableModel model = new DefaultTableModel(data, col);
         JTable table = new JTable(model);
@@ -108,47 +158,52 @@ public class ViewCauThu {
             // Show a dialog to input new data
             JTextField nameField = new JTextField();
             JTextField nationalityField = new JTextField();
-            JComboBox<String> genderField = new JComboBox<>(new String[]{"Nam", "Nữ", "Khác"});
+            JComboBox<String> genderField = new JComboBox<>(new String[] { "Nam", "Nữ", "Khác" });
 
             String[] days = new String[31];
-            for (int i = 1; i <= 31; i++) {
+            for (int i = 1; i <= 9; i++) {
+                days[i - 1] = "0" + String.valueOf(i); // Fill the array with day numbers as strings
+            }
+            for (int i = 10; i <= 31; i++) {
                 days[i - 1] = String.valueOf(i); // Fill the array with day numbers as strings
             }
             JComboBox<String> dayComboBox = new JComboBox<>(days);
 
-            JComboBox<String> monthComboBox = new JComboBox<>(new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+            JComboBox<String> monthComboBox = new JComboBox<>(
+                    new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" });
 
             String[] years = new String[61];
             for (int i = 0; i < 61; i++) {
-                years[i] = String.valueOf(2024 - i); // Fill the array with day numbers as strings
+                years[i] = String.valueOf(2024 - i - 4); // Fill the array with day numbers as strings
             }
             JComboBox<String> yearComboBox = new JComboBox<>(years);
 
             JComboBox<String> joinDayComboBox = new JComboBox<>(days);
-            JComboBox<String> joinMonthComboBox = new JComboBox<>(new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
+            JComboBox<String> joinMonthComboBox = new JComboBox<>(
+                    new String[] { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" });
             JComboBox<String> joinYearComboBox = new JComboBox<>(years);
 
-            JComboBox<String> positionComboBox = new JComboBox<>(new String[]{"Tiền đạo", "Hậu vệ", "Tiền vệ"});
+            JComboBox<String> positionComboBox = new JComboBox<>(new String[] { "Tiền đạo", "Hậu vệ", "Tiền vệ" });
             JTextField matchField = new JTextField();
             JTextField goalField = new JTextField();
             JTextField salaryField = new JTextField();
             JTextField lastFiveMatchesField = new JTextField();
 
             Object[] fields = {
-                "Ten:", nameField,
-                "Quoc tich:", nationalityField,
-                "Gioi tinh:", genderField,
-                "Ngay Sinh:", dayComboBox,
-                "Thang Sinh: ", monthComboBox,
-                "Nam Sinh: ", yearComboBox,
-                "Ngay tham gia:", joinDayComboBox,
-                "Thang tham gia:", joinMonthComboBox,
-                "Nam tham gia:", joinYearComboBox,
-                "Vi tri thi dau:", positionComboBox,
-                "So tran:", matchField,
-                "So ban thang:", goalField,
-                "Luong thoa thuan:", salaryField,
-                "Diem so 5 tran gan nhat (cach nhau 1 dau gach ngang):", lastFiveMatchesField,};
+                    "Ten:", nameField,
+                    "Quoc tich:", nationalityField,
+                    "Gioi tinh:", genderField,
+                    "Ngay Sinh:", dayComboBox,
+                    "Thang Sinh: ", monthComboBox,
+                    "Nam Sinh: ", yearComboBox,
+                    "Ngay tham gia:", joinDayComboBox,
+                    "Thang tham gia:", joinMonthComboBox,
+                    "Nam tham gia:", joinYearComboBox,
+                    "Vi tri thi dau:", positionComboBox,
+                    "So tran:", matchField,
+                    "So ban thang:", goalField,
+                    "Luong thoa thuan:", salaryField,
+                    "Diem so 5 tran gan nhat (cach nhau 1 dau gach ngang):", lastFiveMatchesField, };
 
             int result = JOptionPane.showConfirmDialog(null, fields, "Nhập thông tin cầu thủ mới",
                     JOptionPane.OK_CANCEL_OPTION);
@@ -157,22 +212,54 @@ public class ViewCauThu {
             if (result == JOptionPane.OK_OPTION) {
                 try {
                     // Convert relevant fields to appropriate types
-                    String name = nameField.getText();
-                    String nationality = nationalityField.getText();
+                    String name1 = nameField.getText();
+                    String nationality1 = nationalityField.getText();                                   
+                    
+                    if(containsNumber(name1) || containsNumber(nationality1)){
+                        JOptionPane.showMessageDialog(null, "Vui lòng nhập các dữ liệu tên, quốc tịch không chứa kí tự đặc biệt hoặc số", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }    
+                    String name = normalizeName(name1);
+                    String nationality = normalizeName(nationality1);
+                    
+                    String joinD = (String)
+                            joinDayComboBox.getSelectedItem() + "/"
+                            + (String) joinMonthComboBox.getSelectedItem() + "/"
+                            + (String) joinYearComboBox.getSelectedItem();
 
-                    String joinD = (String) joinDayComboBox.getSelectedItem() + "/" + (String) joinMonthComboBox.getSelectedItem() + "/" + (String) joinYearComboBox.getSelectedItem();
-//                    Integer sotran = Integer.parseInt(matchField.getText());
-//                    Integer soBanThang = Integer.parseInt(goalField.getText());
-//                    Integer Luong = Integer.parseInt(salaryField.getText());
+                    // Integer sotran = Integer.parseInt(matchField.getText());
+                    // Integer soBanThang = Integer.parseInt(goalField.getText());
+                    // Integer Luong = Integer.parseInt(salaryField.getText());
                     String sotran = matchField.getText();
                     String soBanThang = goalField.getText();
                     String Luong = salaryField.getText();
-                    
 
                     // Get the selected position from JComboBox
                     String gender = (String) genderField.getSelectedItem();
                     String selectedPosition = (String) positionComboBox.getSelectedItem();
-                    String birth = (String) dayComboBox.getSelectedItem() + "/" + (String) monthComboBox.getSelectedItem() + "/" + (String) yearComboBox.getSelectedItem();
+                    String birth = (String) dayComboBox.getSelectedItem() + "/"
+                            + (String) monthComboBox.getSelectedItem() + "/"
+                            + (String) yearComboBox.getSelectedItem();
+
+                    //Xu li ngoai le ngay thang nam
+                    if (!validator.isValid(joinD) || !validator.isValid(birth)) {
+                        JOptionPane.showMessageDialog(null, "Ngày tháng năm không hợp lệ", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    //Xu li ngoai le chuoi nhap vao khong phai so
+                    if(name.isEmpty() || nationality.isEmpty() || sotran.isEmpty() || soBanThang.isEmpty() || Luong.isEmpty()){
+                        JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ dữ liệu", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if(!isRealNumber(sotran) || !isRealNumber(soBanThang) || !isRealNumber(Luong)){
+                        JOptionPane.showMessageDialog(null, "Vui lòng nhập các dữ liệu số trận, số bàn thắng và lương là các số thực hợp lệ", "Error",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }                                           
+                    
                     String lastFiveMatchesScores = lastFiveMatchesField.getText();
 
                     // Add the new row to the model
@@ -181,7 +268,9 @@ public class ViewCauThu {
                     saveTableModelToFile(model, "Data.csv");
 
                 } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Invalid input. Please enter valid data.");
+                    JOptionPane.showMessageDialog(null, "Số trận, số bàn thắng và lương phải là số nguyên. Vui lòng nhập lại.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(null, "Dữ liệu nhập sai. Vui lòng không để trống các trường yêu cầu.", "Lỗi nhập liệu", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -202,55 +291,66 @@ public class ViewCauThu {
                 final JCheckBox lastFiveMatchesCheck = new JCheckBox("Điểm số 5 trận gần nhất");
 
                 Object[] options = {
-                    nameCheck, nationalityCheck, genderCheck,
-                    birthDateCheck, joinDateCheck, positionCheck,
-                    matchCheck, goalCheck, salaryCheck, lastFiveMatchesCheck
+                        nameCheck, nationalityCheck, genderCheck,
+                        birthDateCheck, joinDateCheck, positionCheck,
+                        matchCheck, goalCheck, salaryCheck, lastFiveMatchesCheck
                 };
 
-                int option = JOptionPane.showConfirmDialog(null, options, "Chọn trường dữ liệu để chỉnh sửa", JOptionPane.OK_CANCEL_OPTION);
+                int option = JOptionPane.showConfirmDialog(null, options, "Chọn trường dữ liệu để chỉnh sửa",
+                        JOptionPane.OK_CANCEL_OPTION);
 
                 if (option == JOptionPane.OK_OPTION) {
                     // Tạo form chỉnh sửa dựa trên lựa chọn
                     ArrayList<Object> fields = new ArrayList<>();
                     if (nameCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Tên:", new JTextField((String) table.getModel().getValueAt(selectedRow, 0))));
+                        fields.addAll(Arrays.asList("Tên:",
+                                new JTextField((String) table.getModel().getValueAt(selectedRow, 0))));
                     }
                     if (nationalityCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Quốc tịch:", new JTextField((String) table.getModel().getValueAt(selectedRow, 1))));
+                        fields.addAll(Arrays.asList("Quốc tịch:",
+                                new JTextField((String) table.getModel().getValueAt(selectedRow, 1))));
                     }
                     if (genderCheck.isSelected()) {
-                        JComboBox<String> genderComboBox = new JComboBox<>(new String[]{"Male", "Female", "Other"});
+                        JComboBox<String> genderComboBox = new JComboBox<>(new String[] { "Male", "Female", "Other" });
                         genderComboBox.setSelectedItem(table.getModel().getValueAt(selectedRow, 2));
                         fields.addAll(Arrays.asList("Giới tính:", genderComboBox));
                     }
                     if (birthDateCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Ngày Sinh:", new JTextField((String) table.getModel().getValueAt(selectedRow, 3))));
+                        fields.addAll(Arrays.asList("Ngày Sinh:",
+                                new JTextField((String) table.getModel().getValueAt(selectedRow, 3))));
                     }
                     if (joinDateCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Ngày tham gia:", new JTextField((String) table.getModel().getValueAt(selectedRow, 4))));
+                        fields.addAll(Arrays.asList("Ngày tham gia:",
+                                new JTextField((String) table.getModel().getValueAt(selectedRow, 4))));
                     }
                     if (positionCheck.isSelected()) {
-                        JComboBox<String> positionComboBox = new JComboBox<>(new String[]{"Tiền đạo", "Hậu vệ", "Tiền vệ"});
+                        JComboBox<String> positionComboBox = new JComboBox<>(
+                                new String[] { "Tiền đạo", "Hậu vệ", "Tiền vệ" });
                         positionComboBox.setSelectedItem(table.getModel().getValueAt(selectedRow, 5));
                         fields.addAll(Arrays.asList("Vị trí thi đấu:", positionComboBox));
                     }
                     if (matchCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Số trận:", new JTextField((String) table.getModel().getValueAt(selectedRow, 6))));
+                        fields.addAll(Arrays.asList("Số trận:",
+                                new JTextField((String) table.getModel().getValueAt(selectedRow, 6))));
                     }
                     if (goalCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Số bàn thắng:", new JTextField((String) table.getModel().getValueAt(selectedRow, 7))));
+                        fields.addAll(Arrays.asList("Số bàn thắng:",
+                                new JTextField((String) table.getModel().getValueAt(selectedRow, 7))));
                     }
                     if (salaryCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Lương thỏa thuận:", new JTextField((String) table.getModel().getValueAt(selectedRow, 8))));
+                        fields.addAll(Arrays.asList("Lương thỏa thuận:",
+                                new JTextField((String) table.getModel().getValueAt(selectedRow, 8))));
                     }
                     if (lastFiveMatchesCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Điểm số 5 trận gần nhất:", new JTextField((String) table.getModel().getValueAt(selectedRow, 9))));
+                        fields.addAll(Arrays.asList("Điểm số 5 trận gần nhất:",
+                                new JTextField((String) table.getModel().getValueAt(selectedRow, 9))));
                     }
 
                     // Hiển thị form chỉnh sửa
                     if (!fields.isEmpty()) {
                         Object[] fieldsArray = fields.toArray();
-                        int result = JOptionPane.showConfirmDialog(null, fieldsArray, "Chỉnh sửa thông tin cầu thủ", JOptionPane.OK_CANCEL_OPTION);
+                        int result = JOptionPane.showConfirmDialog(null, fieldsArray, "Chỉnh sửa thông tin cầu thủ",
+                                JOptionPane.OK_CANCEL_OPTION);
                         if (result == JOptionPane.OK_OPTION) {
                             int fieldIndex = 1; // Index for accessing the JTextField values in fieldsArray
                             // Cập nhật dữ liệu mới vào model dựa trên nhập liệu
@@ -264,7 +364,8 @@ public class ViewCauThu {
                                 fieldIndex += 2;
                             }
                             if (genderCheck.isSelected()) {
-                                model.setValueAt(((JComboBox) fieldsArray[fieldIndex]).getSelectedItem(), selectedRow, 2);
+                                model.setValueAt(((JComboBox) fieldsArray[fieldIndex]).getSelectedItem(), selectedRow,
+                                        2);
                                 fieldIndex += 2;
                             }
                             if (birthDateCheck.isSelected()) {
@@ -276,7 +377,8 @@ public class ViewCauThu {
                                 fieldIndex += 2;
                             }
                             if (positionCheck.isSelected()) {
-                                model.setValueAt(((JComboBox) fieldsArray[fieldIndex]).getSelectedItem(), selectedRow, 5);
+                                model.setValueAt(((JComboBox) fieldsArray[fieldIndex]).getSelectedItem(), selectedRow,
+                                        5);
                                 fieldIndex += 2;
                             }
                             if (matchCheck.isSelected()) {
