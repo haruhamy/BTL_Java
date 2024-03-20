@@ -81,7 +81,7 @@ public class ViewCauThu {
 
         JFrame frame = new JFrame("Cau thu");
 
-        String[] col = {"Name", "Quoc tich", "Gioi tinh", "Ngay Sinh", "Ngay tham gia", "Vi tri thi dau", "So tran",
+        String[] col = {"Ten", "Quoc tich", "Gioi tinh", "Ngay Sinh", "Ngay tham gia", "Vi tri thi dau", "So tran",
             "So ban thang", "Luong thoa thuan", "Diem so 5 tran gan nhat"};
 
         DefaultTableModel model = new DefaultTableModel(data, col);
@@ -108,7 +108,7 @@ public class ViewCauThu {
             // Show a dialog to input new data
             JTextField nameField = new JTextField();
             JTextField nationalityField = new JTextField();
-            JComboBox<String> genderField = new JComboBox<>(new String[]{"Male", "Female", "Other"});
+            JComboBox<String> genderField = new JComboBox<>(new String[]{"Nam", "Nữ", "Khác"});
 
             String[] days = new String[31];
             for (int i = 1; i <= 31; i++) {
@@ -128,14 +128,14 @@ public class ViewCauThu {
             JComboBox<String> joinMonthComboBox = new JComboBox<>(new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
             JComboBox<String> joinYearComboBox = new JComboBox<>(years);
 
-            JComboBox<String> positionComboBox = new JComboBox<>(new String[]{"Tien dao", "Hau ve", "Tien Ve"});
+            JComboBox<String> positionComboBox = new JComboBox<>(new String[]{"Tiền đạo", "Hậu vệ", "Tiền vệ"});
             JTextField matchField = new JTextField();
             JTextField goalField = new JTextField();
             JTextField salaryField = new JTextField();
             JTextField lastFiveMatchesField = new JTextField();
 
             Object[] fields = {
-                "Name:", nameField,
+                "Ten:", nameField,
                 "Quoc tich:", nationalityField,
                 "Gioi tinh:", genderField,
                 "Ngay Sinh:", dayComboBox,
@@ -148,9 +148,9 @@ public class ViewCauThu {
                 "So tran:", matchField,
                 "So ban thang:", goalField,
                 "Luong thoa thuan:", salaryField,
-                "Last 5 Matches Scores (comma-separated):", lastFiveMatchesField,};
+                "Diem so 5 tran gan nhat (cach nhau 1 dau gach ngang):", lastFiveMatchesField,};
 
-            int result = JOptionPane.showConfirmDialog(null, fields, "Enter player information",
+            int result = JOptionPane.showConfirmDialog(null, fields, "Nhập thông tin cầu thủ mới",
                     JOptionPane.OK_CANCEL_OPTION);
 
             // Validate and add the new row to the model
@@ -190,7 +190,7 @@ public class ViewCauThu {
             int selectedRow = table.getSelectedRow();
             if (selectedRow != -1) {
                 // Menu lựa chọn các trường để chỉnh sửa
-                final JCheckBox nameCheck = new JCheckBox("Name");
+                final JCheckBox nameCheck = new JCheckBox("Tên");
                 final JCheckBox nationalityCheck = new JCheckBox("Quốc tịch");
                 final JCheckBox genderCheck = new JCheckBox("Giới tính");
                 final JCheckBox birthDateCheck = new JCheckBox("Ngày Sinh");
@@ -199,7 +199,7 @@ public class ViewCauThu {
                 final JCheckBox matchCheck = new JCheckBox("Số trận");
                 final JCheckBox goalCheck = new JCheckBox("Số bàn thắng");
                 final JCheckBox salaryCheck = new JCheckBox("Lương thỏa thuận");
-                final JCheckBox lastFiveMatchesCheck = new JCheckBox("Last 5 Matches Scores");
+                final JCheckBox lastFiveMatchesCheck = new JCheckBox("Điểm số 5 trận gần nhất");
 
                 Object[] options = {
                     nameCheck, nationalityCheck, genderCheck,
@@ -213,7 +213,7 @@ public class ViewCauThu {
                     // Tạo form chỉnh sửa dựa trên lựa chọn
                     ArrayList<Object> fields = new ArrayList<>();
                     if (nameCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Name:", new JTextField((String) table.getModel().getValueAt(selectedRow, 0))));
+                        fields.addAll(Arrays.asList("Tên:", new JTextField((String) table.getModel().getValueAt(selectedRow, 0))));
                     }
                     if (nationalityCheck.isSelected()) {
                         fields.addAll(Arrays.asList("Quốc tịch:", new JTextField((String) table.getModel().getValueAt(selectedRow, 1))));
@@ -230,7 +230,7 @@ public class ViewCauThu {
                         fields.addAll(Arrays.asList("Ngày tham gia:", new JTextField((String) table.getModel().getValueAt(selectedRow, 4))));
                     }
                     if (positionCheck.isSelected()) {
-                        JComboBox<String> positionComboBox = new JComboBox<>(new String[]{"Tien dao", "Hau ve", "Tien Ve"});
+                        JComboBox<String> positionComboBox = new JComboBox<>(new String[]{"Tiền đạo", "Hậu vệ", "Tiền vệ"});
                         positionComboBox.setSelectedItem(table.getModel().getValueAt(selectedRow, 5));
                         fields.addAll(Arrays.asList("Vị trí thi đấu:", positionComboBox));
                     }
@@ -244,7 +244,7 @@ public class ViewCauThu {
                         fields.addAll(Arrays.asList("Lương thỏa thuận:", new JTextField((String) table.getModel().getValueAt(selectedRow, 8))));
                     }
                     if (lastFiveMatchesCheck.isSelected()) {
-                        fields.addAll(Arrays.asList("Last 5 Matches Scores:", new JTextField((String) table.getModel().getValueAt(selectedRow, 9))));
+                        fields.addAll(Arrays.asList("Điểm số 5 trận gần nhất:", new JTextField((String) table.getModel().getValueAt(selectedRow, 9))));
                     }
 
                     // Hiển thị form chỉnh sửa
