@@ -9,8 +9,11 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -126,7 +129,21 @@ public class ViewCauThu {
         // Nếu tất cả kiểm tra đều hợp lệ, trả về true
         return true;
     }
-
+    
+    public static String getYearFromString(String dateString, String dateFormat) {
+        SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+        try {
+            Date date = sdf.parse(dateString);
+            // Tạo một đối tượng SimpleDateFormat mới để chỉ định định dạng của kết quả mong
+            // muốn
+            SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+            return yearFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "Định dạng ngày không hợp lệ";
+        }
+    }
+    
     public static void view() {
         Object[][] data = null; // Initialize data outside the try block
         DateValidator validator = new DateValidator("dd/MM/uuuu");
@@ -603,6 +620,41 @@ public class ViewCauThu {
         });
         buttonPanel.add(addLatestMatchScoreButton);
 
+        JButton in4 = new JButton("Information");
+        in4.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                // Lấy thông tin lương thỏa thuận, số trận tham gia và số bàn thắng
+                String ten = model.getValueAt(selectedRow, 0).toString();
+                String nuoc = model.getValueAt(selectedRow, 1).toString();
+                String gen = model.getValueAt(selectedRow, 2).toString();
+                String ns = model.getValueAt(selectedRow, 3).toString();
+                String join = model.getValueAt(selectedRow, 4).toString(); // Giả sử thâm niên được lưu ở cột 4
+                String pos = model.getValueAt(selectedRow, 5).toString();
+                String luongThoaThuanStr = model.getValueAt(selectedRow, 8).toString();
+                String soTranThamGiaStr = model.getValueAt(selectedRow, 6).toString();
+                String soBanThangStr = model.getValueAt(selectedRow, 7).toString();
+
+                // Chuyển đổi sang kiểu dữ liệu số
+                Integer luongThoaThuan = Integer.parseInt(luongThoaThuanStr);
+                int soLuotTranThamGia = Integer.parseInt(soTranThamGiaStr);
+                int banThang = Integer.parseInt(soBanThangStr);
+
+                // Tính toán lương và thưởng (cần kiểm tra lại logic tính toán dựa trên yêu cầu cụ thể)
+                // Giả sử lương và thưởng được tính như trong class CauThu
+                
+                Integer thamNienn = Integer.parseInt(getYearFromString(join, "d/M/yyyy"));
+                
+                CauThu x = new CauThu(ten, nuoc, ns, thamNienn, pos, soLuotTranThamGia, banThang, luongThoaThuan);
+                
+                // Hiển thị thông tin
+                JOptionPane.showMessageDialog(null, "Lương: " + x.tinhLuong() + "\nThưởng: " + x.tinhThuong(), "Information", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select a player to view information.", "No Selection", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        buttonPanel.add(in4);
+        
         // Frame display code not shown
         frame.add(buttonPanel, BorderLayout.SOUTH);
 

@@ -2,31 +2,21 @@ package project_java_group_5;
 
 public class CauThu extends NhanVien {
 	// properties:
-	private String viTriThiDau;
 	private int soLuotTranThamGia;
 	private int banThang;
-	private double luongThoaThuan;
+	private Integer luongThoaThuan;
 
 	// constructors:
 	public CauThu() {
 	}
 
-	public CauThu(String ten, String quocTich, char gioiTinh, String ngaySinh, String ngayVaoLam,
-			String viTriThiDau, int soLuotTranThamGia, int banThang, double luongThoaThuan) {
-		super(ten, quocTich, gioiTinh, ngaySinh, ngayVaoLam);
-		this.viTriThiDau = viTriThiDau;
+	public CauThu(String ten, String quocTich, String ngaySinh, Integer thamNien,
+			String vaitro, int soLuotTranThamGia, int banThang, Integer luongThoaThuan) {
+		super(ten, quocTich, ngaySinh, thamNien, vaitro);
+		
 		this.soLuotTranThamGia = soLuotTranThamGia;
 		this.banThang = banThang;
 		this.luongThoaThuan = luongThoaThuan;
-	}
-
-	// get and set:
-	public String getViTriThiDau() {
-		return viTriThiDau;
-	}
-
-	public void setViTriThiDau(String viTriThiDau) {
-		this.viTriThiDau = viTriThiDau;
 	}
 
 	public int getSoLuotTranThamGia() {
@@ -49,13 +39,17 @@ public class CauThu extends NhanVien {
 		return luongThoaThuan;
 	}
 
-	public void setLuongThoaThuan(double luongThoaThuan) {
+	public void setLuongThoaThuan(Integer luongThoaThuan) {
 		this.luongThoaThuan = luongThoaThuan;
 	}
 
 	// methods:
 	// tinh luong:
-	public double tinhLuong() {
-		return this.luongThoaThuan * super.hesoLuong(super.getNgayVaoLam());
+	public Integer tinhLuong(){
+		return this.luongThoaThuan * super.hesoLuong(super.getThamNien());
 	}
+        //tinh thuong
+        public Integer tinhThuong(){
+            return getBanThang() *  getSoLuotTranThamGia(); 
+        }
 }

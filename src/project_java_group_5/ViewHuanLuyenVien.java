@@ -13,9 +13,10 @@ public class ViewHuanLuyenVien extends JFrame {
 
     private JTable table;
     private DefaultTableModel model;
-    private JTextField txtName, txtNationality, txtBirthDate, txtQualifications, txtExperience;
-    private JButton btnAdd, btnUpdate, btnDelete, btnSave, btnLoad;
-
+    private JTextField txtName, txtNationality, txtBirthDate, txtExperience;
+    private JComboBox<String> cbRole;
+    private JButton btnAdd, btnUpdate, btnDelete, btnSave, btnLoad;   
+    
     public static boolean isRealNumber(String str) {
         if (str == null || str.isEmpty()) {
             return false;
@@ -71,8 +72,19 @@ public class ViewHuanLuyenVien extends JFrame {
         String ans = String.format("%02d", Integer.parseInt(arr[0])) + "/";
         ans += String.format("%02d", Integer.parseInt(arr[1])) + "/" + arr[2];
         return ans;
+    }      
+
+    private boolean hasHeadCoach() {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String role = model.getValueAt(i, 3).toString(); // Giả sử cột 3 chứa thông tin về vai trò
+            if ("HLV trưởng".equals(role)) {
+                return true; // Đã tìm thấy HLV trưởng trong danh sách
+            }
+        }
+        return false; // Không tìm thấy HLV trưởng
     }
 
+    
     public ViewHuanLuyenVien() {
         setTitle("Quản lý Huấn luyện viên");
         setSize(800, 450);
@@ -81,7 +93,7 @@ public class ViewHuanLuyenVien extends JFrame {
         setLayout(new BorderLayout());
 
         // Table setup
-        String[] columnNames = {"Tên", "Quốc tịch", "Ngày sinh", "Chứng chỉ", "Số năm kinh nghiệm"};
+        String[] columnNames = {"Tên", "Quốc tịch", "Ngày sinh", "Vai trò", "Số năm kinh nghiệm"};
         model = new DefaultTableModel(null, columnNames);
         table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -98,9 +110,12 @@ public class ViewHuanLuyenVien extends JFrame {
         panel.add(new JLabel("Ngày sinh:"));
         txtBirthDate = new JTextField();
         panel.add(txtBirthDate);
-        panel.add(new JLabel("Chúng chỉ:"));
-        txtQualifications = new JTextField();
-        panel.add(txtQualifications);
+
+        String[] roles = {"HLV trưởng", "trợ lý HLV", "HLV cho thủ môn", "HLV chuyên về thể lực", "giám đốc kỹ thuật", "bộ phận y tế"};
+        cbRole = new JComboBox<>(roles);
+        panel.add(new JLabel("Vai trò:"));
+        panel.add(cbRole);
+        
         panel.add(new JLabel("Số năm kinh nghiệm:"));
         txtExperience = new JTextField();
         panel.add(txtExperience);
@@ -171,7 +186,9 @@ public class ViewHuanLuyenVien extends JFrame {
         String name = txtName.getText().trim();
         String nationality = txtNationality.getText().trim();
         String birthDate = txtBirthDate.getText().trim();
-        String qualifications = txtQualifications.getText().trim();
+        
+        String qualifications = cbRole.getSelectedItem().toString();
+        
         String experience = txtExperience.getText().trim();
         DateValidator validator = new DateValidator("dd/MM/uuuu");
         // Validate the input data
@@ -184,6 +201,11 @@ public class ViewHuanLuyenVien extends JFrame {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập tên hoặc quốc tịch hợp lệ", "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        if ("HLV trưởng".equals(qualifications) && hasHeadCoach()) {
+            JOptionPane.showMessageDialog(this, "Đã có HLV trưởng, không thể thêm thêm.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return; // Dừng thực hiện nếu đã có HLV trưởng
         }
 
         if (!validator.isValid(chuanhoa(birthDate))) {
@@ -204,7 +226,7 @@ public class ViewHuanLuyenVien extends JFrame {
         txtName.setText("");
         txtNationality.setText("");
         txtBirthDate.setText("");
-        txtQualifications.setText("");
+        
         txtExperience.setText("");
     }
 
@@ -217,7 +239,10 @@ public class ViewHuanLuyenVien extends JFrame {
             String name = txtName.getText().trim();
             String nationality = txtNationality.getText().trim();
             String birthDate = txtBirthDate.getText().trim();
-            String qualifications = txtQualifications.getText().trim();
+            String qualifications = cbRole.getSelectedItem().toString();
+
+            
+            
             String experience = txtExperience.getText().trim();
             
             if(name.isEmpty() && nationality.isEmpty() && birthDate.isEmpty() && qualifications.isEmpty() && experience.isEmpty()){
@@ -253,10 +278,17 @@ public class ViewHuanLuyenVien extends JFrame {
                 }
                 model.setValueAt(chuanhoa(birthDate), selectedRow, 2);
             }
-            
+          
             if (!qualifications.isEmpty()) {
+                boolean existingHeadCoach = hasHeadCoach();
+                String currentRole = selectedRow >= 0 ? model.getValueAt(selectedRow, 3).toString() : "";
+
+                if (existingHeadCoach && !"HLV trưởng".equals(currentRole)) {
+                    JOptionPane.showMessageDialog(this, "Đã có HLV trưởng, không thể cập nhật thành HLV trưởng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return; // Dừng thực hiện nếu đã có HLV trưởng khác
+                }
                 model.setValueAt(qualifications, selectedRow, 3);
-            }           
+            }
 
             if (!experience.isEmpty()) {
                 if (!isRealNumber(experience)) {
