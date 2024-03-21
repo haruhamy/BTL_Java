@@ -27,15 +27,20 @@ public class Login {
         frame.add(username);
         frame.add(password);
         frame.add(login);
+        
         login.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (username.getText().equals("team5") &&
-                        String.valueOf(password.getPassword()).equals("123")) {
+                String tendangnhap = username.getText();
+                String mk = String.valueOf(password.getPassword());
+                if (tendangnhap.equals("team5") &&
+                        mk.equals("123")) {
                     new Menu().setVisible(true);
                     frame.dispose();
                     // ViewCauThu.view();
-                } else {
+                }
+                
+                else {
                     JOptionPane.showMessageDialog(frame, "Failed !");
                 }
             }

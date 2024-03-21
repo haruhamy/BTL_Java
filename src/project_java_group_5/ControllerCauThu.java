@@ -27,7 +27,8 @@ public class ControllerCauThu {
         // Tạo một DefaultTableModel mới để chứa kết quả lọc
         DefaultTableModel filteredModel = new DefaultTableModel();
         // Định nghĩa tiêu đề cột cho bảng mới
-        String[] columnNames = {"Tên", "Quốc tịch", "Giới tính", "Ngày Sinh", "Ngày tham gia", "Vị trí thi đấu", "Số trận", "Số bàn thắng", "Lương thỏa thuận", "Điểm 5 trận gần nhất"};
+        String[] columnNames = { "Tên", "Quốc tịch", "Giới tính", "Ngày Sinh", "Ngày tham gia", "Vị trí thi đấu",
+                "Số trận", "Số bàn thắng", "Lương thỏa thuận", "Điểm 5 trận gần nhất" };
         filteredModel.setColumnIdentifiers(columnNames);
 
         // Duyệt qua dữ liệu gốc và lọc theo vị trí
@@ -114,6 +115,8 @@ public class ControllerCauThu {
 
     public static String chuanhoa(String s) {
         String[] arr = s.split("/");
+        if (arr.length != 3)
+            return "00/00/0000";
         String ans = String.format("%02d", Integer.parseInt(arr[0])) + "/";
         ans += String.format("%02d", Integer.parseInt(arr[1])) + "/" + arr[2];
         return ans;
@@ -209,8 +212,8 @@ public class ControllerCauThu {
             return "Định dạng ngày không hợp lệ";
         }
     }
-    
-    public static Object[][] loadData(Object[][] data){
+
+    public static Object[][] loadData(Object[][] data) {
         try {
             BufferedReader br = new BufferedReader(new FileReader("Data.csv"));
             String line = br.readLine();
@@ -341,9 +344,9 @@ public class ControllerCauThu {
             final JCheckBox lastFiveMatchesCheck = new JCheckBox("Điểm số 5 trận gần nhất");
 
             Object[] options = {
-                nameCheck, nationalityCheck, genderCheck,
-                birthDateCheck, joinDateCheck, positionCheck,
-                matchCheck, goalCheck, salaryCheck, lastFiveMatchesCheck
+                    nameCheck, nationalityCheck, genderCheck,
+                    birthDateCheck, joinDateCheck, positionCheck,
+                    matchCheck, goalCheck, salaryCheck, lastFiveMatchesCheck
             };
 
             int option = JOptionPane.showConfirmDialog(null, options, "Chọn trường dữ liệu để chỉnh sửa",
@@ -361,7 +364,7 @@ public class ControllerCauThu {
                             new JTextField((String) table.getModel().getValueAt(selectedRow, 1))));
                 }
                 if (genderCheck.isSelected()) {
-                    JComboBox<String> genderComboBox = new JComboBox<>(new String[]{"Nam", "Nữ", "Khác"});
+                    JComboBox<String> genderComboBox = new JComboBox<>(new String[] { "Nam", "Nữ", "Khác" });
                     genderComboBox.setSelectedItem(table.getModel().getValueAt(selectedRow, 2));
                     fields.addAll(Arrays.asList("Giới tính:", genderComboBox));
                 }
@@ -375,7 +378,7 @@ public class ControllerCauThu {
                 }
                 if (positionCheck.isSelected()) {
                     JComboBox<String> positionComboBox = new JComboBox<>(
-                            new String[]{"Tiền đạo", "Hậu vệ", "Tiền vệ"});
+                            new String[] { "Tiền đạo", "Hậu vệ", "Tiền vệ" });
                     positionComboBox.setSelectedItem(table.getModel().getValueAt(selectedRow, 5));
                     fields.addAll(Arrays.asList("Vị trí thi đấu:", positionComboBox));
                 }
@@ -558,7 +561,12 @@ public class ControllerCauThu {
         }
     }
 
-    public static void them(DefaultTableModel model, Object[] fields, JTextField nameField, JTextField nationalityField,JComboBox<String> positionComboBox, JComboBox<String> genderField, JComboBox<String> joinDayComboBox, JComboBox<String> joinMonthComboBox, JComboBox<String> joinYearComboBox, JTextField matchField, JTextField goalField, JTextField salaryField, JComboBox<String> dayComboBox,JComboBox<String> monthComboBox, JComboBox<String> yearComboBox,DateValidator validator, JTextField lastFiveMatchesField) {
+    public static void them(DefaultTableModel model, Object[] fields, JTextField nameField, JTextField nationalityField,
+            JComboBox<String> positionComboBox, JComboBox<String> genderField, JComboBox<String> joinDayComboBox,
+            JComboBox<String> joinMonthComboBox, JComboBox<String> joinYearComboBox, JTextField matchField,
+            JTextField goalField, JTextField salaryField, JComboBox<String> dayComboBox,
+            JComboBox<String> monthComboBox, JComboBox<String> yearComboBox, DateValidator validator,
+            JTextField lastFiveMatchesField) {
         boolean Check = false;
         while (!Check) {
             Check = true;
@@ -613,7 +621,8 @@ public class ControllerCauThu {
                                 JOptionPane.ERROR_MESSAGE);
                         Check = false;
                     }
-                    if (!ControllerCauThu.isRealNumber(sotran) || !ControllerCauThu.isRealNumber(soBanThang) || !ControllerCauThu.isRealNumber(Luong)) {
+                    if (!ControllerCauThu.isRealNumber(sotran) || !ControllerCauThu.isRealNumber(soBanThang)
+                            || !ControllerCauThu.isRealNumber(Luong)) {
                         JOptionPane.showMessageDialog(null,
                                 "Vui lòng nhập các dữ liệu số trận, số bàn thắng và lương là các số thực hợp lệ",
                                 "Error",
@@ -632,8 +641,8 @@ public class ControllerCauThu {
                     if (Check == true) {
                         // Add the new row to the model
                         model.addRow(
-                                new Object[]{name, nationality, gender, birth, joinD, selectedPosition, sotran,
-                                    soBanThang, Luong, lastFiveMatchesScores});
+                                new Object[] { name, nationality, gender, birth, joinD, selectedPosition, sotran,
+                                        soBanThang, Luong, lastFiveMatchesScores });
                         ControllerCauThu.saveTableModelToFile(model, "Data.csv");
                     }
 
