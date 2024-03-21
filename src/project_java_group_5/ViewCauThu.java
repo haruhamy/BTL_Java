@@ -20,15 +20,90 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 public class ViewCauThu {
+
+    private static void filterByPosition(DefaultTableModel originalModel, String position) {
+        // Tạo một DefaultTableModel mới để chứa kết quả lọc
+        DefaultTableModel filteredModel = new DefaultTableModel();
+        // Định nghĩa tiêu đề cột cho bảng mới
+        String[] columnNames = {"Tên", "Quốc tịch", "Giới tính", "Ngày Sinh", "Ngày tham gia", "Vị trí thi đấu", "Số trận", "Số bàn thắng", "Lương thỏa thuận", "Điểm 5 trận gần nhất"};
+        filteredModel.setColumnIdentifiers(columnNames);
+
+        // Duyệt qua dữ liệu gốc và lọc theo vị trí
+        for (int i = 0; i < originalModel.getRowCount(); i++) {
+            String playerPosition = (String) originalModel.getValueAt(i, 5); // Giả sử vị trí được lưu ở cột thứ 6
+            if (playerPosition.equals(position)) {
+                // Nếu vị trí khớp, thêm dòng vào model mới
+                Object[] row = new Object[originalModel.getColumnCount()];
+                for (int j = 0; j < originalModel.getColumnCount(); j++) {
+                    row[j] = originalModel.getValueAt(i, j);
+                }
+                filteredModel.addRow(row);
+            }
+        }
+
+        // Tạo JTable mới với model đã lọc
+        JTable filteredTable = new JTable(filteredModel);
+
+        // Tạo JFrame hoặc JDialog mới để hiển thị bảng
+        JDialog dialog = new JDialog();
+        dialog.setTitle("Kết quả lọc: " + position);
+        dialog.setSize(800, 400); // Đặt kích thước phù hợp
+        dialog.setLocationRelativeTo(null); // Hiển thị ở giữa màn hình
+
+        // Thêm JTable vào JScrollPane và thêm JScrollPane vào dialog
+        JScrollPane scrollPane = new JScrollPane(filteredTable);
+        dialog.add(scrollPane);
+
+        // Hiển thị dialog
+        dialog.setVisible(true);
+    }
+
+    private static void sortTableByColumn(DefaultTableModel model, int column, boolean ascending) {
+        ArrayList<Object[]> rowDataList = new ArrayList<>();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            Object[] row = new Object[model.getColumnCount()];
+            for (int j = 0; j < model.getColumnCount(); j++) {
+                row[j] = model.getValueAt(i, j);
+            }
+            rowDataList.add(row);
+        }
+
+        // Kiểm tra xem cột có phải là dữ liệu số không để áp dụng bộ so sánh phù hợp
+        if (column == 6 || column == 7 || column == 8) { // Giả sử cột 6, 7, 8 là số trận, số bàn thắng, và lương
+            rowDataList.sort((o1, o2) -> {
+                Double val1 = Double.parseDouble(o1[column].toString());
+                Double val2 = Double.parseDouble(o2[column].toString());
+                return ascending ? val1.compareTo(val2) : val2.compareTo(val1);
+            });
+        } else {
+            // Sắp xếp theo thứ tự từ điển cho các cột khác
+            rowDataList.sort((o1, o2) -> {
+                if (ascending) {
+                    return o1[column].toString().compareToIgnoreCase(o2[column].toString());
+                } else {
+                    return o2[column].toString().compareToIgnoreCase(o1[column].toString());
+                }
+            });
+        }
+
+        // Cập nhật lại model với dữ liệu đã được sắp xếp
+        model.setRowCount(0);
+        for (Object[] row : rowDataList) {
+            model.addRow(row);
+        }
+    }
 
     public static void saveTableModelToFile(DefaultTableModel model, String filePath) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
@@ -686,37 +761,52 @@ public class ViewCauThu {
         });
         buttonPanel.add(in4);
 
-        JButton sortButton = new JButton("Sort by Goals");
-        buttonPanel.add(sortButton);
+        // Trong phần khởi tạo của bạn, thay đổi nút "Sort by Goals" thành một menu lựa chọn
+        JButton sortMenuButton = new JButton("Sort Options");
+        buttonPanel.add(sortMenuButton);
 
-        sortButton.addActionListener(e -> {
-            DefaultTableModel model1 = (DefaultTableModel) table.getModel();
-            int rowCount = model1.getRowCount();
-            ArrayList<Object[]> rowDataList = new ArrayList<>();
+        // Tạo JPopupMenu cho các lựa chọn sắp xếp
+        JPopupMenu sortMenu = new JPopupMenu();
 
-            // Lấy dữ liệu từ model và thêm vào ArrayList
-            for (int i = 0; i < rowCount; i++) {
-                Object[] row = new Object[model.getColumnCount()];
-                for (int j = 0; j < model.getColumnCount(); j++) {
-                    row[j] = model.getValueAt(i, j);
-                }
-                rowDataList.add(row);
-            }
+        // Thêm các mục lựa chọn sắp xếp
+        JMenuItem sortByGoals = new JMenuItem("Sort by Goals");
+        JMenuItem sortBySalary = new JMenuItem("Sort by Salary");
+        JMenuItem sortByMatches = new JMenuItem("Sort by Matches");
 
-            // Sắp xếp ArrayList dựa trên số bàn thắng (giả sử số bàn thắng ở cột thứ 7)
-            rowDataList.sort((o1, o2) -> {
-                Integer goals1 = Integer.parseInt(o1[7].toString());
-                Integer goals2 = Integer.parseInt(o2[7].toString());
-                return goals2.compareTo(goals1); // Sắp xếp giảm dần
-            });
+        // Thêm các mục vào menu
+        sortMenu.add(sortByGoals);
+        sortMenu.add(sortBySalary);
+        sortMenu.add(sortByMatches);
 
-            // Cập nhật lại model với dữ liệu đã được sắp xếp
-            model1.setRowCount(0); // Xóa dữ liệu hiện có trước khi thêm lại
-            for (Object[] row : rowDataList) {
-                model1.addRow(row);
-            }
-        });
+        // Xử lý sự kiện cho từng mục menu
+        sortByGoals.addActionListener(e -> sortTableByColumn(model, 7, false)); // Giả sử số bàn thắng ở cột thứ 8 (index 7)
+        sortBySalary.addActionListener(e -> sortTableByColumn(model, 8, false)); // Giả sử lương ở cột thứ 9 (index 8)
+        sortByMatches.addActionListener(e -> sortTableByColumn(model, 6, false)); // Giả sử số trận ở cột thứ 7 (index 6)
 
+        // Hiển thị menu khi nhấp vào nút
+        sortMenuButton.addActionListener(e -> sortMenu.show(sortMenuButton, 0, sortMenuButton.getHeight()));
+        // Phương thức để sắp xếp bảng dựa trên cột và hướng sắp xếp       
+
+        // Trong phương thức view() hoặc phần khởi tạo GUI của bạn
+        JButton filterMenuButton = new JButton("Filter Options");
+        buttonPanel.add(filterMenuButton);
+
+        JPopupMenu filterMenu = new JPopupMenu();
+
+        JMenuItem filterForwards = new JMenuItem("Filter Forwards");
+        JMenuItem filterMidfielders = new JMenuItem("Filter Midfielders");
+        JMenuItem filterDefenders = new JMenuItem("Filter Defenders");
+
+        filterMenu.add(filterForwards);
+        filterMenu.add(filterMidfielders);
+        filterMenu.add(filterDefenders);
+
+        filterMenuButton.addActionListener(e -> filterMenu.show(filterMenuButton, 0, filterMenuButton.getHeight()));
+
+        filterForwards.addActionListener(e -> filterByPosition(model, "Tiền đạo"));
+        filterMidfielders.addActionListener(e -> filterByPosition(model, "Tiền vệ"));
+        filterDefenders.addActionListener(e -> filterByPosition(model, "Hậu vệ"));      
+        
         // Frame display code not shown
         frame.add(buttonPanel, BorderLayout.SOUTH);
 

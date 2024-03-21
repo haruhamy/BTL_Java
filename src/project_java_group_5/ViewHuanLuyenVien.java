@@ -15,7 +15,7 @@ public class ViewHuanLuyenVien extends JFrame {
     private DefaultTableModel model;
     private JTextField txtName, txtNationality, txtBirthDate, txtExperience;
     private JComboBox<String> cbRole;
-    private JButton btnAdd, btnUpdate, btnDelete, btnSave, btnLoad;   
+    private JButton btnAdd, btnUpdate, btnDelete, btnSave, btnLoad, btnIn4;   
     
     public static boolean isRealNumber(String str) {
         if (str == null || str.isEmpty()) {
@@ -130,6 +130,7 @@ public class ViewHuanLuyenVien extends JFrame {
         btnDelete = new JButton("Delete");
         btnSave = new JButton("Save");
         btnLoad = new JButton("Load");
+        btnIn4 = new JButton("Information");               
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnAdd);
@@ -137,6 +138,7 @@ public class ViewHuanLuyenVien extends JFrame {
         btnPanel.add(btnDelete);
         btnPanel.add(btnSave);
         btnPanel.add(btnLoad);
+        btnPanel.add(btnIn4);
 
         add(panel, BorderLayout.NORTH);
         add(btnPanel, BorderLayout.SOUTH);
@@ -183,9 +185,15 @@ public class ViewHuanLuyenVien extends JFrame {
                 new Menu().setVisible(true); // Adjust this call as per your main menu display method
             }
         });
-
+        
+        btnIn4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                in4();
+            }
+        });
     }
-
+    
     private void addCoach() {
         String name = txtName.getText().trim();
         String nationality = txtNationality.getText().trim();
@@ -360,7 +368,30 @@ public class ViewHuanLuyenVien extends JFrame {
             e.printStackTrace();
         }
     }
-
+    
+    private void in4(){
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow >= 0) {
+            // Only update fields if the corresponding text field is not empty.
+            
+            String name = model.getValueAt(selectedRow, 0).toString();
+            String nationality = model.getValueAt(selectedRow, 1).toString();
+            String birthDate = model.getValueAt(selectedRow, 2).toString();
+            String qualifications = model.getValueAt(selectedRow, 3).toString();        
+            String experience = model.getValueAt(selectedRow, 4).toString();
+            
+            Integer thamnien = Integer.parseInt(experience);
+            
+            HuanLuyenVien x = new HuanLuyenVien(name, nationality, birthDate, thamnien, qualifications);
+            
+// Hiển thị thông tin
+                JOptionPane.showMessageDialog(null, "Lương: " + x.tinhLuong() + "\nThưởng: " + x.tinhThuong(),
+                        "Information", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select a coach to update.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
     public static void view() {
         EventQueue.invokeLater(() -> {
             try {
@@ -372,4 +403,5 @@ public class ViewHuanLuyenVien extends JFrame {
             }
         });
     }
+    
 }
