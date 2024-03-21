@@ -104,8 +104,8 @@ public class ViewCauThu {
     }
     
     public static boolean isStringInFormat(String input) {
-        // Kiểm tra định dạng cơ bản của chuỗi sử dụng biểu thức chính quy
-        if (!input.matches("(\\d)-(\\d)-(\\d)-(\\d)-(\\d)")) {
+        // Sửa đổi biểu thức chính quy để khớp với một số có một hoặc hai chữ số
+        if (!input.matches("(\\d{1,2})-(\\d{1,2})-(\\d{1,2})-(\\d{1,2})-(\\d{1,2})")) {
             return false;
         }
 
@@ -627,7 +627,7 @@ public class ViewCauThu {
                 // Lấy thông tin lương thỏa thuận, số trận tham gia và số bàn thắng
                 String ten = model.getValueAt(selectedRow, 0).toString();
                 String nuoc = model.getValueAt(selectedRow, 1).toString();
-                String gen = model.getValueAt(selectedRow, 2).toString();
+                
                 String ns = model.getValueAt(selectedRow, 3).toString();
                 String join = model.getValueAt(selectedRow, 4).toString(); // Giả sử thâm niên được lưu ở cột 4
                 String pos = model.getValueAt(selectedRow, 5).toString();
@@ -654,6 +654,38 @@ public class ViewCauThu {
             }
         });
         buttonPanel.add(in4);
+
+        JButton sortButton = new JButton("Sort by Goals");
+        buttonPanel.add(sortButton);
+
+        sortButton.addActionListener(e -> {
+            DefaultTableModel model1 = (DefaultTableModel) table.getModel();
+            int rowCount = model1.getRowCount();
+            ArrayList<Object[]> rowDataList = new ArrayList<>();
+
+            // Lấy dữ liệu từ model và thêm vào ArrayList
+            for (int i = 0; i < rowCount; i++) {
+                Object[] row = new Object[model.getColumnCount()];
+                for (int j = 0; j < model.getColumnCount(); j++) {
+                    row[j] = model.getValueAt(i, j);
+                }
+                rowDataList.add(row);
+            }
+
+            // Sắp xếp ArrayList dựa trên số bàn thắng (giả sử số bàn thắng ở cột thứ 7)
+            rowDataList.sort((o1, o2) -> {
+                Integer goals1 = Integer.parseInt(o1[7].toString());
+                Integer goals2 = Integer.parseInt(o2[7].toString());
+                return goals2.compareTo(goals1); // Sắp xếp giảm dần
+            });
+
+            // Cập nhật lại model với dữ liệu đã được sắp xếp
+            model1.setRowCount(0); // Xóa dữ liệu hiện có trước khi thêm lại
+            for (Object[] row : rowDataList) {
+                model1.addRow(row);
+            }
+        });
+
         
         // Frame display code not shown
         frame.add(buttonPanel, BorderLayout.SOUTH);

@@ -72,10 +72,13 @@ public class ViewHuanLuyenVien extends JFrame {
         String ans = String.format("%02d", Integer.parseInt(arr[0])) + "/";
         ans += String.format("%02d", Integer.parseInt(arr[1])) + "/" + arr[2];
         return ans;
-    }      
+    }
 
-    private boolean hasHeadCoach() {
+    private boolean hasHeadCoach(int excludeRowIndex) {
         for (int i = 0; i < model.getRowCount(); i++) {
+            if (i == excludeRowIndex) {
+                continue; // Bỏ qua dòng hiện tại
+            }
             String role = model.getValueAt(i, 3).toString(); // Giả sử cột 3 chứa thông tin về vai trò
             if ("HLV trưởng".equals(role)) {
                 return true; // Đã tìm thấy HLV trưởng trong danh sách
@@ -83,6 +86,7 @@ public class ViewHuanLuyenVien extends JFrame {
         }
         return false; // Không tìm thấy HLV trưởng
     }
+
 
     
     public ViewHuanLuyenVien() {
@@ -203,7 +207,7 @@ public class ViewHuanLuyenVien extends JFrame {
             return;
         }
 
-        if ("HLV trưởng".equals(qualifications) && hasHeadCoach()) {
+        if ("HLV trưởng".equals(qualifications) && hasHeadCoach(0)) {
             JOptionPane.showMessageDialog(this, "Đã có HLV trưởng, không thể thêm thêm.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return; // Dừng thực hiện nếu đã có HLV trưởng
         }
@@ -278,14 +282,15 @@ public class ViewHuanLuyenVien extends JFrame {
                 }
                 model.setValueAt(chuanhoa(birthDate), selectedRow, 2);
             }
-          
+
             if (!qualifications.isEmpty()) {
-                boolean existingHeadCoach = hasHeadCoach();
+                boolean existingHeadCoach = hasHeadCoach(selectedRow); // Truyền chỉ số dòng hiện tại
                 String currentRole = selectedRow >= 0 ? model.getValueAt(selectedRow, 3).toString() : "";
 
-                if (existingHeadCoach && !"HLV trưởng".equals(currentRole)) {
+                // Kiểm tra nếu vai trò mới là HLV trưởng và đã có HLV trưởng khác trong danh sách
+                if ("HLV trưởng".equals(qualifications) && existingHeadCoach && !"HLV trưởng".equals(currentRole)) {
                     JOptionPane.showMessageDialog(this, "Đã có HLV trưởng, không thể cập nhật thành HLV trưởng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return; // Dừng thực hiện nếu đã có HLV trưởng khác
+                    return; // Dừng thực hiện nếu cố gắng cập nhật vai trò thành HLV trưởng khi đã có một HLV trưởng
                 }
                 model.setValueAt(qualifications, selectedRow, 3);
             }
