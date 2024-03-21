@@ -102,7 +102,7 @@ public class ControllerHuanLuyenVien {
             JOptionPane.showMessageDialog(null, "Lương: " + x.tinhLuong() + "\nThưởng: " + x.tinhThuong(),
                     "Information", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Please select a coach to update.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn một huấn luyện viên để thay đổi.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -118,7 +118,7 @@ public class ControllerHuanLuyenVien {
         // Validate the input data
         if (name.isEmpty() || nationality.isEmpty() || birthDate.isEmpty() || qualifications.isEmpty()
                 || experience.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Please fill in all fields", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Vui lòng điền đầy đủ các mục", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         if (ControllerHuanLuyenVien.containsNumber(name) || ControllerHuanLuyenVien.containsNumber(nationality)) {
@@ -224,10 +224,10 @@ public class ControllerHuanLuyenVien {
                 model.setValueAt(experience, selectedRow, 4);
             }
 
-            JOptionPane.showMessageDialog(null, "Coach information updated successfully.", "Information",
+            JOptionPane.showMessageDialog(null, "Thông tin huấn luyện viên được cập nhật thành công.", "Thông tin",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Please select a coach to update.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn một huấn luyện viên để cập nhật.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -236,11 +236,11 @@ public class ControllerHuanLuyenVien {
         if (selectedRow >= 0) {
             // Remove the selected row from the model
             model.removeRow(selectedRow);
-            JOptionPane.showMessageDialog(null, "Coach information deleted successfully.", "Information",
+            JOptionPane.showMessageDialog(null, "Thông tin huấn luyện viên được xóa thành công.", "Information",
                     JOptionPane.INFORMATION_MESSAGE);
         } else {
             // No row is selected
-            JOptionPane.showMessageDialog(null, "Please select a coach to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn một huấn luyện viên để xóa.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -256,7 +256,7 @@ public class ControllerHuanLuyenVien {
                 }
                 bw.newLine(); // Move to the next line after writing all columns of the current row
             }
-            JOptionPane.showMessageDialog(null, "Data saved successfully to " + file.getAbsolutePath(), "Information",
+            JOptionPane.showMessageDialog(null, "Dữ liệu đã được lưu thành công vào " + file.getAbsolutePath(), "Information",
                     JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error saving data: " + e.getMessage(), "Error",
@@ -273,7 +273,7 @@ public class ControllerHuanLuyenVien {
                 String[] data = line.split(",");
                 model.addRow(data);
             }
-            JOptionPane.showMessageDialog(null, "Data loaded successfully!", "Success",
+            JOptionPane.showMessageDialog(null, "Dữ liệu đã được hiện ra thành công!", "Success",
                     JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error loading data!", "Error", JOptionPane.ERROR_MESSAGE);

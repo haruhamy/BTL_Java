@@ -274,9 +274,9 @@ public class ControllerCauThu {
 
             // Hiển thị thông tin
             JOptionPane.showMessageDialog(null, "Lương: " + x.tinhLuong() + "\nThưởng: " + x.tinhThuong(),
-                    "Information", JOptionPane.INFORMATION_MESSAGE);
+                    "Chi tiết lương và thưởng", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Please select a player to view information.", "No Selection",
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn ít nhất một cầu thủ.", "No Selection",
                     JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -319,9 +319,9 @@ public class ControllerCauThu {
             // Save the updated data to the file
             ControllerCauThu.saveTableModelToFile(model, "Data.csv");
 
-            JOptionPane.showMessageDialog(null, "Latest match score added successfully!");
+            JOptionPane.showMessageDialog(null, "Cập nhật điểm mới thành công!");
         } else {
-            JOptionPane.showMessageDialog(null, "Please select a player to add the latest match score.");
+            JOptionPane.showMessageDialog(null, "Vui lòng chọn ít nhất một cầu thủ");
         }
     }
 

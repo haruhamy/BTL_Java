@@ -2,8 +2,6 @@ package project_java_group_5;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.io.BufferedReader;
-import java.io.FileReader;
 
 import javax.swing.JButton;
 
@@ -38,8 +36,8 @@ public class ViewCauThu {
        
         frame = new JFrame("Cau thu");
 
-        String[] col = { "Ten", "Quoc tich", "Gioi tinh", "Ngay Sinh", "Ngay tham gia", "Vi tri thi dau", "So tran",
-                "So ban thang", "Luong thoa thuan", "Diem so 5 tran gan nhat" };
+        String[] col = { "Tên", "Quốc tịch", "Giới tính", "Ngày sinh", "Ngày gia nhập", "Vị trí thi đấu", "Số trận",
+                "Số bàn thắng", "Lương thỏa thuận", "Điểm số 5 trận gần nhất" };
 
         model = new DefaultTableModel(data, col);
         table = new JTable(model);
@@ -53,9 +51,9 @@ public class ViewCauThu {
         // Use FlowLayout for the button panel with horizontal spacing
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 50, 10));
 
-        addButton = new JButton("Add");
-        changeButton = new JButton("Change");
-        deleteButton = new JButton("Delete");
+        addButton = new JButton("Thêm");
+        changeButton = new JButton("Sửa");
+        deleteButton = new JButton("Xóa");
 
         buttonPanel.add(addButton);
         buttonPanel.add(changeButton);
@@ -97,35 +95,34 @@ public class ViewCauThu {
             lastFiveMatchesField = new JTextField();
 
             Object[] fields = {
-                    "Ten:", nameField,
-                    "Quoc tich:", nationalityField,
-                    "Gioi tinh:", genderField,
-                    "Ngay Sinh:", dayComboBox,
-                    "Thang Sinh: ", monthComboBox,
-                    "Nam Sinh: ", yearComboBox,
-                    "Ngay tham gia:", joinDayComboBox,
-                    "Thang tham gia:", joinMonthComboBox,
-                    "Nam tham gia:", joinYearComboBox,
-                    "Vi tri thi dau:", positionComboBox,
-                    "So tran:", matchField,
-                    "So ban thang:", goalField,
-                    "Luong thoa thuan:", salaryField,
-                    "Diem so 5 tran gan nhat (cach nhau 1 dau gach ngang):", lastFiveMatchesField, };
+                    "Tên:", nameField,
+                    "Quốc tịch:", nationalityField,
+                    "Giới tính:", genderField,
+                    "Ngày sinh:", dayComboBox,
+                    "Tháng sinh: ", monthComboBox,
+                    "Năm sinh: ", yearComboBox,
+                    "Ngày gia nhập:", joinDayComboBox,
+                    "Tháng gia nhập:", joinMonthComboBox,
+                    "Năm gia nhập:", joinYearComboBox,
+                    "Vị trí thi đấu", positionComboBox,
+                    "Số trận:", matchField,
+                    "Số bàn thắng:", goalField,
+                    "Lương thỏa thuận:", salaryField,
+                    "Điểm số 5 trận gần nhất (Lưu ý khi nhập các điểm số cách nhau dấu gạch ngang):", lastFiveMatchesField, };
             ControllerCauThu.them(model, fields, nameField, nationalityField, positionComboBox, genderField, joinDayComboBox, joinMonthComboBox, joinYearComboBox, matchField, goalField, salaryField, dayComboBox, monthComboBox, yearComboBox, validator, lastFiveMatchesField);
         });
 
         changeButton.addActionListener(e -> {
             ControllerCauThu.thaydoi(table, model, validator);
         });
-
-        // Inside the view() method, after initializing other buttons
-        JButton saveButton = new JButton("Save");
+        
+        JButton saveButton = new JButton("Lưu");
 
         buttonPanel.add(saveButton);
 
         saveButton.addActionListener(e -> {
             ControllerCauThu.saveTableModelToFile(model, "Data.csv");
-            JOptionPane.showMessageDialog(null, "Data saved successfully!");
+            JOptionPane.showMessageDialog(null, "Đã lưu dữ liệu thành công!");
         });
 
         deleteButton.addActionListener(e -> {
@@ -137,7 +134,7 @@ public class ViewCauThu {
             }
         });
         // Inside the view() method, after initializing other components
-        backButton = new JButton("Back");
+        backButton = new JButton("Quay lại");
         buttonPanel.add(backButton);
 
         backButton.addActionListener(e -> {
@@ -147,30 +144,30 @@ public class ViewCauThu {
         });
 
         // Inside the view() method, after initializing other components
-        addLatestMatchScoreButton = new JButton("Add Latest Match Score");
+        addLatestMatchScoreButton = new JButton("Thêm điểm số trận mới nhất");
 
         addLatestMatchScoreButton.addActionListener(e -> {
             ControllerCauThu.them5tran(table, model);
         });
         buttonPanel.add(addLatestMatchScoreButton);
 
-        in4 = new JButton("Information");
+        in4 = new JButton("Chi tiết lương và thưởng");
         in4.addActionListener(e -> {
             ControllerCauThu.in4(table, model);
         });
         buttonPanel.add(in4);
 
         // Trong phần khởi tạo của bạn, thay đổi nút "Sort by Goals" thành một menu lựa chọn
-        sortMenuButton = new JButton("Sort Options");
+        sortMenuButton = new JButton("Sắp xếp");
         buttonPanel.add(sortMenuButton);
 
         // Tạo JPopupMenu cho các lựa chọn sắp xếp
         JPopupMenu sortMenu = new JPopupMenu();
 
         // Thêm các mục lựa chọn sắp xếp
-        JMenuItem sortByGoals = new JMenuItem("Sort by Goals");
-        JMenuItem sortBySalary = new JMenuItem("Sort by Salary");
-        JMenuItem sortByMatches = new JMenuItem("Sort by Matches");
+        JMenuItem sortByGoals = new JMenuItem("Sắp xếp theo bàn thắng");
+        JMenuItem sortBySalary = new JMenuItem("Sắp xếp theo lương");
+        JMenuItem sortByMatches = new JMenuItem("Sắp xếp theo số trận đã đá");
 
         // Thêm các mục vào menu
         sortMenu.add(sortByGoals);
@@ -187,14 +184,14 @@ public class ViewCauThu {
         // Phương thức để sắp xếp bảng dựa trên cột và hướng sắp xếp       
 
         // Trong phương thức view() hoặc phần khởi tạo GUI của bạn
-        JButton filterMenuButton = new JButton("Filter Options");
+        JButton filterMenuButton = new JButton("Lọc");
         buttonPanel.add(filterMenuButton);
 
         JPopupMenu filterMenu = new JPopupMenu();
 
-        JMenuItem filterForwards = new JMenuItem("Filter Forwards");
-        JMenuItem filterMidfielders = new JMenuItem("Filter Midfielders");
-        JMenuItem filterDefenders = new JMenuItem("Filter Defenders");
+        JMenuItem filterForwards = new JMenuItem("Lọc tiền đạo");
+        JMenuItem filterMidfielders = new JMenuItem("Lọc tiền vệ");
+        JMenuItem filterDefenders = new JMenuItem("Lọc hậu vệ");
 
         filterMenu.add(filterForwards);
         filterMenu.add(filterMidfielders);

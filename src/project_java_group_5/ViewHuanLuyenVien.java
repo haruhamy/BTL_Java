@@ -50,12 +50,12 @@ public class ViewHuanLuyenVien extends JFrame {
         panel.add(txtExperience);
 
         // Buttons setup
-        btnAdd = new JButton("Add");
-        btnUpdate = new JButton("Update");
-        btnDelete = new JButton("Delete");
-        btnSave = new JButton("Save");
-        btnLoad = new JButton("Load");
-        btnIn4 = new JButton("Information");               
+        btnAdd = new JButton("Thêm");
+        btnUpdate = new JButton("Thay đổi");
+        btnDelete = new JButton("Xóa");
+        btnSave = new JButton("Lưu");
+        btnLoad = new JButton("Hiện dữ liệu");
+        btnIn4 = new JButton("Chi tiết lương thưởng");               
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(btnAdd);
@@ -99,7 +99,7 @@ public class ViewHuanLuyenVien extends JFrame {
                 ControllerHuanLuyenVien.loadData(table);
             }
         });
-        JButton btnBack = new JButton("Back");
+        JButton btnBack = new JButton("Quay lại");
         btnPanel.add(btnBack); // Add the button to the panel containing other buttons
 
         btnBack.addActionListener(new ActionListener() {
