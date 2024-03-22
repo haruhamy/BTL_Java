@@ -133,8 +133,9 @@ public class ControllerHuanLuyenVien {
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        if ("HLV trưởng".equals(Role) && ControllerHuanLuyenVien.hasHeadCoach(0, model)) {
+        
+        //Không cần loại trừ hàng nào nên sẽ để là -1
+        if ("HLV trưởng".equals(Role) && ControllerHuanLuyenVien.hasHeadCoach(-1, model)) {
             JOptionPane.showMessageDialog(null, "Đã có HLV trưởng, không thể thêm thêm.", "Lỗi",
                     JOptionPane.ERROR_MESSAGE);
             return; // Dừng thực hiện nếu đã có HLV trưởng
@@ -184,7 +185,25 @@ public class ControllerHuanLuyenVien {
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            
+            int check = 0;
+            if (!Role.isEmpty()) {
+                boolean existingHeadCoach = ControllerHuanLuyenVien.hasHeadCoach(selectedRow, model); // Truyền chỉ số
+                                                                                                      // dòng hiện tại
+                String currentRole = selectedRow >= 0 ? model.getValueAt(selectedRow, 3).toString() : "";
 
+                // Kiểm tra nếu vai trò mới là HLV trưởng và đã có HLV trưởng khác trong danh sách
+                if ("HLV trưởng".equals(Role) && existingHeadCoach && !"HLV trưởng".equals(currentRole)) {
+                    JOptionPane.showMessageDialog(null, "Đã có HLV trưởng, không thể cập nhật thành HLV trưởng.", "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                    check = 1;
+                    return; // Dừng thực hiện nếu cố gắng cập nhật vai trò thành HLV trưởng khi đã có một
+                            // HLV trưởng
+                }
+                model.setValueAt(Role, selectedRow, 3);
+            }
+            if(check == 1) return;
+            
             if (!name.isEmpty()) {
                 if (ControllerHuanLuyenVien.containsNumber(name)) {
                     JOptionPane.showMessageDialog(null, "Vui lòng nhập tên hợp lệ", "Error",
@@ -201,8 +220,8 @@ public class ControllerHuanLuyenVien {
                     return;
                 }
                 model.setValueAt(ControllerHuanLuyenVien.normalizeName(nationality), selectedRow, 1);
-            }
-
+            }                       
+            
             if (!birthDate.isEmpty()) {
 
                 if (!validator.isValid(ControllerHuanLuyenVien.chuanhoa(birthDate))) {
@@ -211,23 +230,8 @@ public class ControllerHuanLuyenVien {
                     return;
                 }
                 model.setValueAt(ControllerHuanLuyenVien.chuanhoa(birthDate), selectedRow, 2);
-            }
-
-            if (!Role.isEmpty()) {
-                boolean existingHeadCoach = ControllerHuanLuyenVien.hasHeadCoach(selectedRow, model); // Truyền chỉ số
-                                                                                                      // dòng hiện tại
-                String currentRole = selectedRow >= 0 ? model.getValueAt(selectedRow, 3).toString() : "";
-
-                // Kiểm tra nếu vai trò mới là HLV trưởng và đã có HLV trưởng khác trong danh sách
-                if ("HLV trưởng".equals(Role) && existingHeadCoach && !"HLV trưởng".equals(currentRole)) {
-                    JOptionPane.showMessageDialog(null, "Đã có HLV trưởng, không thể cập nhật thành HLV trưởng.", "Lỗi",
-                            JOptionPane.ERROR_MESSAGE);
-                    return; // Dừng thực hiện nếu cố gắng cập nhật vai trò thành HLV trưởng khi đã có một
-                            // HLV trưởng
-                }
-                model.setValueAt(Role, selectedRow, 3);
-            }
-
+            }           
+            
             if (!experience.isEmpty()) {
                 if (!ControllerHuanLuyenVien.isRealNumber(experience)) {
                     JOptionPane.showMessageDialog(null, "Số năm kinh nghiệm chưa hợp lệ", "Error",

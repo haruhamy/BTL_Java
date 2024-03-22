@@ -45,7 +45,7 @@ public class ViewHuanLuyenVien extends JFrame {
         txtBirthDate = new JTextField();
         panel.add(txtBirthDate);
 
-        String[] roles = {"HLV trưởng", "trợ lý HLV", "HLV cho thủ môn", "HLV chuyên về thể lực", "giám đốc kỹ thuật", "bộ phận y tế"};
+        String[] roles = {"","HLV trưởng", "trợ lý HLV", "HLV cho thủ môn", "HLV chuyên về thể lực", "giám đốc kỹ thuật", "bộ phận y tế"};
         cbRole = new JComboBox<>(roles);
         panel.add(new JLabel("Vai trò:"));
         panel.add(cbRole);
