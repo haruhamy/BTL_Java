@@ -129,7 +129,7 @@ public class ControllerCauThu {
 
         try {
             int x = Integer.parseInt(str);
-            if (x > 0) {
+            if (x >= 0) {
                 return true;
             } else {
                 return false;
@@ -252,25 +252,24 @@ public class ControllerCauThu {
     public static void in4(JTable table, DefaultTableModel model) {
         int selectedRow = table.getSelectedRow();
         if (selectedRow != -1) {
-            // Lấy thông tin lương thỏa thuận, số trận tham gia và số bàn thắng
+            // Lấy thông tin 
             String ten = model.getValueAt(selectedRow, 0).toString();
             String nuoc = model.getValueAt(selectedRow, 1).toString();
-
             String ns = model.getValueAt(selectedRow, 3).toString();
-            String join = model.getValueAt(selectedRow, 4).toString(); // Giả sử thâm niên được lưu ở cột 4
+            String join = model.getValueAt(selectedRow, 4).toString(); 
             String pos = model.getValueAt(selectedRow, 5).toString();
             String luongThoaThuanStr = model.getValueAt(selectedRow, 8).toString();
             String soTranThamGiaStr = model.getValueAt(selectedRow, 6).toString();
             String soBanThangStr = model.getValueAt(selectedRow, 7).toString();
 
             // Chuyển đổi sang kiểu dữ liệu số
+            
             Integer luongThoaThuan = Integer.parseInt(luongThoaThuanStr);
             int soLuotTranThamGia = Integer.parseInt(soTranThamGiaStr);
             int banThang = Integer.parseInt(soBanThangStr);
 
-            // Tính toán lương và thưởng (cần kiểm tra lại logic tính toán dựa trên yêu cầu
-            // cụ thể)
-            // Giả sử lương và thưởng được tính như trong class CauThu
+            // Tính toán lương và thưởng            
+           
             Integer thamNienn = Integer.parseInt(ControllerCauThu.getYearFromString(join, "d/M/yyyy"));
 
             CauThu x = new CauThu(ten, nuoc, ns, thamNienn, pos, soLuotTranThamGia, banThang, luongThoaThuan);
@@ -378,7 +377,7 @@ public class ControllerCauThu {
                 }
                 if (positionCheck.isSelected()) {
                     JComboBox<String> positionComboBox = new JComboBox<>(
-                            new String[] { "Tiền đạo", "Hậu vệ", "Tiền vệ" });
+                            new String[] { "Tiền đạo", "Hậu vệ", "Tiền vệ", "Thủ môn" });
                     positionComboBox.setSelectedItem(table.getModel().getValueAt(selectedRow, 5));
                     fields.addAll(Arrays.asList("Vị trí thi đấu:", positionComboBox));
                 }

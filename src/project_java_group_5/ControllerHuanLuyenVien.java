@@ -111,27 +111,30 @@ public class ControllerHuanLuyenVien {
 
     public static void addCoach(JTextField txtName, JTextField txtNationality, JTextField txtBirthDate,
             JTextField txtExperience, JComboBox<String> cbRole, DefaultTableModel model) {
+        
+        //Lay du lieu
         String name = txtName.getText().trim();
         String nationality = txtNationality.getText().trim();
         String birthDate = txtBirthDate.getText().trim();
-
-        String qualifications = cbRole.getSelectedItem().toString();
-
+        String Role = cbRole.getSelectedItem().toString();
         String experience = txtExperience.getText().trim();
-        DateValidator validator = new DateValidator("dd/MM/uuuu");
+        
         // Validate the input data
-        if (name.isEmpty() || nationality.isEmpty() || birthDate.isEmpty() || qualifications.isEmpty()
+        DateValidator validator = new DateValidator("dd/MM/uuuu");       
+        
+        if (name.isEmpty() || nationality.isEmpty() || birthDate.isEmpty() || Role.isEmpty()
                 || experience.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Vui lòng điền đầy đủ các mục", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+        
         if (ControllerHuanLuyenVien.containsNumber(name) || ControllerHuanLuyenVien.containsNumber(nationality)) {
             JOptionPane.showMessageDialog(null, "Vui lòng nhập tên hoặc quốc tịch hợp lệ", "Error",
                     JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if ("HLV trưởng".equals(qualifications) && ControllerHuanLuyenVien.hasHeadCoach(0, model)) {
+        if ("HLV trưởng".equals(Role) && ControllerHuanLuyenVien.hasHeadCoach(0, model)) {
             JOptionPane.showMessageDialog(null, "Đã có HLV trưởng, không thể thêm thêm.", "Lỗi",
                     JOptionPane.ERROR_MESSAGE);
             return; // Dừng thực hiện nếu đã có HLV trưởng
@@ -151,31 +154,31 @@ public class ControllerHuanLuyenVien {
         // Add data to the table model
         model.addRow(new Object[] { ControllerHuanLuyenVien.normalizeName(name),
                 ControllerHuanLuyenVien.normalizeName(nationality), ControllerHuanLuyenVien.chuanhoa(birthDate),
-                qualifications, experience });
+                Role, experience });
 
         // Clear the input fields after adding
         txtName.setText("");
         txtNationality.setText("");
         txtBirthDate.setText("");
-
         txtExperience.setText("");
     }
 
     public static void updateCoach(JTable table, JTextField txtName, JTextField txtNationality, JTextField txtBirthDate,
             JTextField txtExperience, JComboBox<String> cbRole, DefaultTableModel model) {
+        
         DateValidator validator = new DateValidator("dd/MM/uuuu");
+        
         int selectedRow = table.getSelectedRow();
         if (selectedRow >= 0) {
             // Only update fields if the corresponding text field is not empty.
-
+           
             String name = txtName.getText().trim();
             String nationality = txtNationality.getText().trim();
             String birthDate = txtBirthDate.getText().trim();
-            String qualifications = cbRole.getSelectedItem().toString();
-
+            String Role = cbRole.getSelectedItem().toString();
             String experience = txtExperience.getText().trim();
 
-            if (name.isEmpty() && nationality.isEmpty() && birthDate.isEmpty() && qualifications.isEmpty()
+            if (name.isEmpty() && nationality.isEmpty() && birthDate.isEmpty() && Role.isEmpty()
                     && experience.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Vui lòng nhập ít nhất 1 dữ liệu", "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -210,20 +213,19 @@ public class ControllerHuanLuyenVien {
                 model.setValueAt(ControllerHuanLuyenVien.chuanhoa(birthDate), selectedRow, 2);
             }
 
-            if (!qualifications.isEmpty()) {
+            if (!Role.isEmpty()) {
                 boolean existingHeadCoach = ControllerHuanLuyenVien.hasHeadCoach(selectedRow, model); // Truyền chỉ số
                                                                                                       // dòng hiện tại
                 String currentRole = selectedRow >= 0 ? model.getValueAt(selectedRow, 3).toString() : "";
 
-                // Kiểm tra nếu vai trò mới là HLV trưởng và đã có HLV trưởng khác trong danh
-                // sách
-                if ("HLV trưởng".equals(qualifications) && existingHeadCoach && !"HLV trưởng".equals(currentRole)) {
+                // Kiểm tra nếu vai trò mới là HLV trưởng và đã có HLV trưởng khác trong danh sách
+                if ("HLV trưởng".equals(Role) && existingHeadCoach && !"HLV trưởng".equals(currentRole)) {
                     JOptionPane.showMessageDialog(null, "Đã có HLV trưởng, không thể cập nhật thành HLV trưởng.", "Lỗi",
                             JOptionPane.ERROR_MESSAGE);
                     return; // Dừng thực hiện nếu cố gắng cập nhật vai trò thành HLV trưởng khi đã có một
                             // HLV trưởng
                 }
-                model.setValueAt(qualifications, selectedRow, 3);
+                model.setValueAt(Role, selectedRow, 3);
             }
 
             if (!experience.isEmpty()) {
